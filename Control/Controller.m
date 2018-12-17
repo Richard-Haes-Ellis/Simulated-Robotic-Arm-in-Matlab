@@ -8,9 +8,14 @@ qppr = [in(13); in(14); in(15)];
 
 t = in(16);
 
-Kp = diag([2507.081129	16768.258127	1794.842807]);
-Ki = diag([Kp(1,1)/0.134885	Kp(2,2)/0.136135	Kp(3,3)/0.135169]);
-Kd = diag([Kp(1,1)*0.033734	Kp(2,2)*0.034037	Kp(3,3)*0.033798]);
+q1 = q(1); q2 = q(2); q3 = q(3);
+Ga = [0;
+(1716581734779868317*cos(q2 + q3))/180143985094819840 + (1378921849378812531*cos(q2))/28147497671065600;
+(5364317921187089*cos(q2 + q3))/562949953421312];
+
+Kp = diag([19.000000	10.000000	8.800000]);
+Ki = diag([Kp(1,1)/Inf	Kp(2,2)/Inf	Kp(3,3)/Inf]);
+Kd = diag([Kp(1,1)*7.069546	Kp(2,2)*93.075326	Kp(3,3)*10.987823]);
 
 persistent ek_i ek_1
 Ts = 0.001;
@@ -31,7 +36,7 @@ epk = qpr-qp;
 ek_i = ek_i + (Ts/2)*(ek+ek_1);
 
 % Cálculo de la señal de control incremental generada por el controlador C(z)
-Imk = Kp*ek + Kd*epk + Ki*ek_i;
+Imk = Kp*ek + Kd*epk + Ki*ek_i + Ga;
 
 % Actualizamos error del instante k-1
 ek_1 = ek;
