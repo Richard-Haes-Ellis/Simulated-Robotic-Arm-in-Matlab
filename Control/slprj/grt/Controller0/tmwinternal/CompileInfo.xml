@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MF0 version="1.1">
+  <ModelRefInfoRepo.ModelRefInfoRoot type="ModelRefInfoRepo.ModelRefInfoRoot" uuid="c752d47d-7c8e-46a8-9eee-9a5e5e93e738">
+    <dataTransferInfos>AAFJTQAAAAAOAAAAOAAAAAYAAAAIAAAAAgAAAAAAAAAFAAAACAAAAAAAAAABAAAAAQAAAAAAAAAFAAQAAQAAAAEAAAAAAAAA</dataTransferInfos>
+    <hasBwsAccessed>true</hasBwsAccessed>
+    <hasBwsAccessedByAnyModel>true</hasBwsAccessedByAnyModel>
+    <inportSignalObjects>AAFJTQAAAAAOAAAAWAAAAAYAAAAIAAAAAQAAAAAAAAAFAAAACAAAAAEAAAAGAAAAAQAAAAAAAAAOAAAAAAAAAA4AAAAAAAAADgAAAAAAAAAOAAAAAAAAAA4AAAAAAAAADgAAAAAAAAA=</inportSignalObjects>
+    <inports type="ModelRefInfoRepo.InportInformation" uuid="acd5beaa-d92c-4cd5-a203-5ed69ab7426f">
+      <sigNameToEMVCEMap type="ModelRefInfoRepo.SigNameEMVCEInfo" uuid="e103f94b-3f88-4639-bacd-62149d410cac"/>
+    </inports>
+    <inports type="ModelRefInfoRepo.InportInformation" uuid="29066a97-9ebf-4ede-8014-a76cfffb2aa7">
+      <originalPortNumber>1</originalPortNumber>
+      <sigNameToEMVCEMap type="ModelRefInfoRepo.SigNameEMVCEInfo" uuid="82e2fa51-8dd1-4f3d-bf48-64a1b57eced5"/>
+    </inports>
+    <inports type="ModelRefInfoRepo.InportInformation" uuid="5cca3b2b-8223-4a99-ac52-f1e49a88119a">
+      <originalPortNumber>2</originalPortNumber>
+      <sigNameToEMVCEMap type="ModelRefInfoRepo.SigNameEMVCEInfo" uuid="2b3458de-cae3-45a4-af6d-76f9dc7d4235"/>
+    </inports>
+    <inports type="ModelRefInfoRepo.InportInformation" uuid="a0c0e8f2-4a9d-45c2-af9f-8bd089d0f819">
+      <originalPortNumber>3</originalPortNumber>
+      <sigNameToEMVCEMap type="ModelRefInfoRepo.SigNameEMVCEInfo" uuid="a9bc191d-4e74-4e53-8225-a3cc9053dbb5"/>
+    </inports>
+    <inports type="ModelRefInfoRepo.InportInformation" uuid="2d7039fd-2acd-48ac-9f62-cbd56467238e">
+      <originalPortNumber>4</originalPortNumber>
+      <sigNameToEMVCEMap type="ModelRefInfoRepo.SigNameEMVCEInfo" uuid="7fa04ab2-1fe6-476c-a1eb-3b41ef3f94b3"/>
+    </inports>
+    <inports type="ModelRefInfoRepo.InportInformation" uuid="952f8546-946f-4d47-8ec6-b91864bd1fd0">
+      <originalPortNumber>5</originalPortNumber>
+      <sigNameToEMVCEMap type="ModelRefInfoRepo.SigNameEMVCEInfo" uuid="da2ec232-4592-4324-bbd7-ed96d0e5e384"/>
+    </inports>
+    <isOrigInportVirtualBus>false</isOrigInportVirtualBus>
+    <isOrigInportVirtualBus>false</isOrigInportVirtualBus>
+    <isOrigInportVirtualBus>false</isOrigInportVirtualBus>
+    <isOrigInportVirtualBus>false</isOrigInportVirtualBus>
+    <isOrigInportVirtualBus>false</isOrigInportVirtualBus>
+    <isOrigInportVirtualBus>false</isOrigInportVirtualBus>
+    <isOrigOutportVirtualBus>false</isOrigOutportVirtualBus>
+    <outportSignalObjects>AAFJTQAAAAAOAAAAMAAAAAYAAAAIAAAAAQAAAAAAAAAFAAAACAAAAAEAAAABAAAAAQAAAAAAAAAOAAAAAAAAAA==</outportSignalObjects>
+    <outports type="ModelRefInfoRepo.OutportInformation" uuid="8b4c0e2e-589b-4aab-9d60-429d43ab277c">
+      <sigNameToEMVCEMap type="ModelRefInfoRepo.SigNameEMVCEInfo" uuid="5f9d17d5-cf0d-4ffb-ad9a-2d4674c05452"/>
+    </outports>
+    <timingAndTaskingRegistry></timingAndTaskingRegistry>
+    <FMUBlockMap type="ModelRefInfoRepo.FMUBlockInfo" uuid="56b915e2-4b7d-469c-b0d4-d01e8293b23c"/>
+    <periodicEventPortUnsupportedBlockInfo type="ModelRefInfoRepo.PeriodicEventPortUnsupportedBlockInfo" uuid="200454f2-d5ce-4678-82ac-43dd5d2a4071"/>
+    <simulinkFunctions type="ModelRefInfoRepo.SimulinkFunctions" uuid="42f2f9bd-6080-4176-abb9-ca341d591c21">
+      <compSimulinkFunctionCatalog>AAFJTQAAAAAOAAAA0AAAAAYAAAAIAAAAAgAAAAAAAAAFAAAACAAAAAEAAAABAAAAAQAAAAAAAAAFAAQAEQAAAAEAAAAiAAAAQ29tcEZ1bmN0aW9ucwAAAABDb21wU2VydmljZVBvcnRzAAAAAAAAAA4AAAAwAAAABgAAAAgAAAAGAAAAAAAAAAUAAAAIAAAAAAAAAAAAAAABAAAAAAAAAAkAAAAAAAAADgAAADAAAAAGAAAACAAAAAYAAAAAAAAABQAAAAgAAAAAAAAAAAAAAAEAAAAAAAAACQAAAAAAAAA=</compSimulinkFunctionCatalog>
+      <variantSimulinkFunctions type="ModelRefInfoRepo.VariantSimulinkFunctions" uuid="934cdb4e-979e-427f-8950-b6e8036f4144"/>
+    </simulinkFunctions>
+    <stateWriterToOwnerMap type="ModelRefInfoRepo.StateWriterInfo" uuid="d4d1f082-3e11-4b67-92c5-249ed76efed1"/>
+    <unionTsContainedTs type="ModelRefInfoRepo.UnionTsContainedTsInfo" uuid="0e9ee578-332a-43e8-bb22-031c2bb6be6a"/>
+  </ModelRefInfoRepo.ModelRefInfoRoot>
+</MF0>
