@@ -1,7 +1,7 @@
 
 %% Simulacion
 
-fprintf('SImulando...\n');
+fprintf('Simulando...\n');
 % Tiempo de muestreo del generador de trayecotrias
 Ts_reference = 0.015;
 % Tiempo de muestreo del control 
