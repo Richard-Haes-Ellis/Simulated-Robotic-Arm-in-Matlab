@@ -82,9 +82,9 @@ function guardar_Callback(hObject, eventdata, handles)
 % hObject    handle to guardar (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-contolType = get(get(handles.uibuttongroup3,'SelectedObject'),'Tag');
+contolType = get(get(handles.uibuttongroup4,'SelectedObject'),'Tag');
 reductoras = get(get(handles.uibuttongroup2,'SelectedObject'),'Tag');
-modelo = get(get(handles.uibuttongroup4,'SelectedObject'),'Tag');
+modelo = get(get(handles.uibuttongroup3,'SelectedObject'),'Tag');
 handles.contolType = contolType;
 handles.reductoras = reductoras;
 handles.modelo = modelo;
