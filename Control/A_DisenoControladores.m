@@ -1,16 +1,14 @@
 
-clear all;
-
 answer = questdlg('¿Crear nuevo o cargar existente?','Diseño','Nuevo','Cargar','Cargar');
 switch answer
     case 'Cargar'
         uiopen('load');
         answer = questdlg('¿Desea editarlo?','Diseño','Editar','No','No');
-        switch answer    
+        switch answer
             case 'Editar'
                 while(~strcmp(answer,'No'))
                     answer = questdlg('Seleciona controlador:','Diseño','C1','C2','C3','C3');
-                    switch answer    
+                    switch answer
                         case 'C1'
                             rltool(Gs1,Crl1);
                             fprintf('Presiona una tecla Terminar...\n');
@@ -32,13 +30,24 @@ switch answer
             case 'No'
         end
     case 'Nuevo'
-        answer = questdlg('Elija modelo del sistema','Diseño','Ideal','Real','Ideal');
-        switch answer
-            case 'Ideal'
-                load('modeloIdeal.mat');
-            case 'Real'
+        [tipoControl,reductora,modelo] = GUI();
+        switch modelo
+            case 'realista'
                 load('modeloReal.mat');
+            case 'ideal'
+                load('modeloIdeal.mat');
         end
+        switch reductora
+            case 'con'
+                R1 = R(1,1);
+                R2 = R(2,2);
+                R3 = R(3,3);
+            case 'sin'
+                R1 = 1;
+                R2 = 1;
+                R3 = 1;
+        end
+        
         syms qd1 qd2 qd3 real
         
         B1 = diff(V_num(1),qd1);
@@ -50,25 +59,28 @@ switch answer
         
         A1 = eval(M_num(1,1));  A2 = eval(M_num(2,2));  A3 = eval(M_num(3,3));
         B1 = eval(B1);          B2 = eval(B2);          B3 = eval(B3);
-        C1 = 0;                 C2 = 0;                 C3 = 0;
         
-        answer = questdlg('Reductoras:','Diseño','Con R','Sin R','Con R');
-        switch answer
-            case 'Con R'
-                R1 = R(1,1);
-                R2 = R(2,2);
-                R3 = R(3,3);
-            case 'Sin R'
-                R1 = 1;
-                R2 = 1;
-                R3 = 1;
+        % Se usa modelo doble integrador
+        if(strcmp(tipoControl,'parcalculado'))
+            % Funciones de trasferencia de los tres eslabones
+            Gs1 = tf([1],[1 0 0]);
+            Gs2 = tf([1],[1 0 0]);
+            Gs3 = tf([1],[1 0 0]);
+        % Se usa modelo del error dinamico
+        elseif(strcmp(tipoControl,'precompdinref') || strcmp(tipoControl,'precompdinmed'))
+            % Funciones de trasferencia de los tres eslabones
+            Gs1 = tf([Kt(1,1)*R1],[A1 0 0]);
+            Gs2 = tf([Kt(2,2)*R2],[A2 0 0]);
+            Gs3 = tf([Kt(3,3)*R3],[A3 0 0]);
+        % Se usa modelo linealizado normal
+        else
+            % Funciones de trasferencia de los tres eslabones
+            Gs1 = tf([Kt(1,1)*R1],[A1 B1 0]);
+            Gs2 = tf([Kt(2,2)*R2],[A2 B2 0]);
+            Gs3 = tf([Kt(3,3)*R3],[A3 B3 0]);
         end
-        % Funciones de trasferencia de los tres eslabones
-        Gs1 = tf([Kt(1,1)*R1],[A1 B1 C1]);
-        Gs2 = tf([Kt(2,2)*R2],[A2 B2 C2]);
-        Gs3 = tf([Kt(3,3)*R3],[A3 B3 C3]);
         
-         % Root-locus (Calculo de controladores)
+        % Root-locus (Calculo de controladores)
         rltool(Gs1);
         fprintf('Presiona una tecla para continuar con siguente controlador...\n');
         pause();
@@ -103,36 +115,26 @@ code = ['function senalControl = Controller(in)\n\n'...
 'qppr = [in(13); in(14); in(15)];\n\n'... 
 't = in(16);\n\n'];
 fprintf(file,code);
-comps = questdlg('¿Añadir Compensador?','Diseño','Si','No','No');
-switch comps
-    case 'Si'
-        answer = questdlg('¿Modelo real o ideal?','Diseño','Ideal','Real','Ideal');
-        switch answer
-            case 'Ideal'
-                load('modeloIdeal.mat');
-            case 'Real'
-                load('modeloReal.mat');
-        end
-        list = {'Compensador con q medida',...
-                'Compensador con q de referencia',...
-                'Compensador dynamico con q medida',...
-                'Compensador dynamico con q referencia'};
-        [indx,tf] = listdlg('PromptString','Selecionar Compensador','SelectionMode','single','ListSize',[350,70],'ListString',list);
-    switch indx
-        case 1
-            % Compensador estatico con medidas
-            fprintf(file,'q1 = q(1); q2 = q(2); q3 = q(3);\n');
-        case 2
-            % Compensador estatico con referencias
-            fprintf(file,'q1 = qr(1); qr2 = q(2); qr3 = q(3);\n');
-        case 3
-            % Compensador dinamico con medidas
-        case 4
-            % Compensador dinamico con referencias
-    end
-    fprintf(file,'Ga = [%s;\n%s;\n%s];\n\n',char(G_num(1)),char(G_num(2)),char(G_num(3)));
-    case 'No'
+
+switch tipoControl
+    case {'precompmed','precompdinmed','parcalculado'} % Son los que usan medidas
+        fprintf(file,'q1 = q(1); q2 = q(2); q3 = q(3);\n');
+    case {'precompref','precompdinref'} % Son los que usan referencias
+        fprintf(file,'q1 = qr(1); qr2 = q(2); qr3 = q(3);\n');;
 end
+switch tipoControl
+    case {'parcalculado','precompdinref','precompdinmed'}
+        fprintf(file,'Ma = [%s %s %s;\n%s %s %s;\n%s %s %s];\n\n', ...
+            char(N_num(1,1)),char(N_num(1,2)),char(N_num(1,3)), ...
+            char(N_num(2,1)),char(N_num(2,2)),char(N_num(2,3)), ...
+            char(N_num(3,1)),char(N_num(3,2)),char(N_num(3,3)));
+        fprintf(file,'Ca = [%s;\n%s;\n%s];\n\n',char(V_num(1)),char(V_num(2)),char(V_num(3)));
+        fprintf(file,'Ga = [%s;\n%s;\n%s];\n\n',char(G_num(1)),char(G_num(2)),char(G_num(3)));
+    
+    case {'precompmed','precompref'}
+        fprintf(file,'Ga = [%s;\n%s;\n%s];\n\n',char(G_num(1)),char(G_num(2)),char(G_num(3)));
+end
+   
 fprintf(file,'Kp = diag([%f\t%f\t%f]);\n',Kp1,Kp2,Kp3);
 fprintf(file,'Ki = diag([Kp(1,1)/%f\tKp(2,2)/%f\tKp(3,3)/%f]);\n',Ti1,Ti2,Ti3);
 fprintf(file,'Kd = diag([Kp(1,1)*%f\tKp(2,2)*%f\tKp(3,3)*%f]);\n\n',Td1,Td2,Td3);
@@ -153,10 +155,14 @@ code = ['persistent ek_i ek_1\n' ...
 'ek_i = ek_i + (Ts/2)*(ek+ek_1);\n\n' ...
 '%% Cálculo de la señal de control incremental generada por el controlador C(z)\n'];
 fprintf(file,code);
-switch comps
-    case 'Si'
+switch tipoControl
+    case {'precompref','precompmed'}
         fprintf(file,'Imk = Kp*ek + Kd*epk + Ki*ek_i + Ga;\n\n');
-    case 'No'
+	case {'precompdinref','precompdinmed'}
+        fprintf(file,'Imk = Kp*ek + Kd*epk + Ki*ek_i Ma*qppr + Ca*qp + Ga;\n\n');
+    case 'parcalculado'
+        fprintf(file,'Imk = Ma*(qppr + (Kp*ek + Kd*epk + Ki*ek_i)) + Ca*qp + Ga;\n\n');
+    case 'normal'
         fprintf(file,'Imk = Kp*ek + Kd*epk + Ki*ek_i;\n\n');
 end
 
@@ -167,9 +173,27 @@ code = ['%% Actualizamos error del instante k-1\n' ...
 'end'];
 fprintf(file,code);
 fclose(file);
-msg = sprintf(['Controladores generados:\n\n'...
+
+fprintf('Controladora generada\n');
+
+switch(tipoControl)
+    case 'precompmed'
+        tipo = sprintf('Precompensacion con medidas');cle
+	case 'precompref'
+        tipo = sprintf('Precompensacion con referencias');
+    case 'precompdinmed'
+        tipo = sprintf('Precompensacion dinamica con medidas');
+    case 'precompdinref'
+        tipo = sprintf('Precompensacion dinamica con medidas');
+    case 'parcalculado'
+        tipo = sprintf('Par Calculado');
+    case 'normal'
+        tipo = sprintf('Normal');
+end 
+    
+msg = sprintf(['Tipo de control: %s\n\nParametros de los PD/PIDs:\n\n'...
     'Controlador 1:\nKp: %f\nTi: %f\nTd: %f\n\n' ...
     'Controlador 2:\nKp: %f\nTi: %f\nTd: %f\n\n' ...
-    'Controlador 3:\nKp: %f\nTi: %f\nTd: %f\n'],Kp1,Ti1,Td1,Kp2,Ti2,Td2,Kp3,Ti3,Td3);
+    'Controlador 3:\nKp: %f\nTi: %f\nTd: %f\n'],tipo,Kp1,Ti1,Td1,Kp2,Ti2,Td2,Kp3,Ti3,Td3);
 msgbox(msg);
 
