@@ -22,7 +22,7 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 18-Dec-2018 00:47:55
+% Last Modified by GUIDE v2.5 18-Dec-2018 04:33:57
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -52,13 +52,6 @@ function GUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   unrecognized PropertyName/PropertyValue pairs from the
 %            command line (see VARARGIN)
-load('modeloIdeal.mat');
-handles.R=R;
-handles.Kt=Kt;
-handles.M_num=M_num;
-handles.V_num=V_num;
-handles.G_num=G_num;
-guidata(hObject,handles);
 
 % Choose default command line output for GUI
 handles.output = hObject;
@@ -67,7 +60,7 @@ handles.output = hObject;
 guidata(hObject, handles);
 
 % UIWAIT makes GUI wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
+uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -78,59 +71,10 @@ function varargout = GUI_OutputFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
-
-
-% --- Executes on button press in control1.
-function control1_Callback(hObject, eventdata, handles)
-
-
-function models = lineariz()
-if(strcmp(control,'Normal')
-syms qd1 qd2 qd3 real
-B1 = diff(V_num(1),qd1);
-B2 = diff(V_num(2),qd2);    
-B3 = diff(V_num(3),qd3);
-        
-q1  = 0; q2  = 0; q3  = 0;
-qd1 = 0; qd2 = 0; qd3 = 0;
-        
-A1 = eval(M_num(1,1));  A2 = eval(M_num(2,2));  A3 = eval(M_num(3,3));
-B1 = eval(B1);          B2 = eval(B2);          B3 = eval(B3);
-C1 = 0;                 C2 = 0;                 C3 = 0;
-
-% Funciones de trasferencia de los tres eslabones
-Gs1 = tf([Kt(1,1)*R1],[A1 B1 C1]);
-Gs2 = tf([Kt(2,2)*R2],[A2 B2 C2]);
-Gs3 = tf([Kt(3,3)*R3],[A3 B3 C3]);
-end   
-
-% --- Executes on button press in control2.
-function control2_Callback(hObject, eventdata, handles)
-% hObject    handle to control2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in control3.
-function control3_Callback(hObject, eventdata, handles)
-% hObject    handle to control3 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in generar.
-function generar_Callback(hObject, eventdata, handles)
-% hObject    handle to generar (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in editar.
-function editar_Callback(hObject, eventdata, handles)
-% hObject    handle to editar (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+varargout{1} = handles.contolType;
+varargout{2} = handles.reductoras;
+varargout{3} = handles.modelo;
+delete(handles.figure1);
 
 
 % --- Executes on button press in guardar.
@@ -138,57 +82,22 @@ function guardar_Callback(hObject, eventdata, handles)
 % hObject    handle to guardar (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-
-
-
-
-
-% --- Executes when selected object is changed in uibuttongroup4.
-function uibuttongroup4_SelectionChangedFcn(hObject, eventdata, handles)
-control = get(get(handles.uibuttongroup4,'SelectedObject'),'Tag')
-handles.control = control;
-guidata(hObject, handles);
-
-% --- Executes when selected object is changed in uibuttongroup3.
-function uibuttongroup3_SelectionChangedFcn(hObject, eventdata, handles)
-modelo = get(get(handles.uibuttongroup3,'SelectedObject'),'Tag')
-switch modelo
-    case 'realista'
-        load('modeloReal.mat')
-        handles.R=R;
-        handles.Kt=Kt;
-        handles.M_num=M_num;
-        handles.V_num=V_num;
-        handles.G_num=G_num;
-    case 'ideal'
-        load('modeloIdeal.mat')
-        handles.R=R;
-        handles.Kt=Kt;
-        handles.M_num=M_num;
-        handles.V_num=V_num;
-        handles.G_num=G_num;
-end
+contolType = get(get(handles.uibuttongroup3,'SelectedObject'),'Tag');
+reductoras = get(get(handles.uibuttongroup2,'SelectedObject'),'Tag');
+modelo = get(get(handles.uibuttongroup4,'SelectedObject'),'Tag');
+handles.contolType = contolType;
+handles.reductoras = reductoras;
 handles.modelo = modelo;
 guidata(hObject, handles);
 
 
-% --- Executes when selected object is changed in uibuttongroup2.
-function uibuttongroup2_SelectionChangedFcn(hObject, eventdata, handles)
-R = handles.R;
-reductora = get(get(handles.uibuttongroup2,'SelectedObject'),'Tag')
-switch reductora
-    case 'con'
-        R1 = R(1,1)
-        R2 = R(2,2)
-        R3 = R(3,3)
-    case 'sin'
-        R1 = 1
-        R2 = 1
-        R3 = 1
+
+% --- Executes when user attempts to close figure1.
+function figure1_CloseRequestFcn(hObject, eventdata, handles)
+if isequal(get(hObject, 'waitstatus'), 'waiting')
+% The GUI is still in UIWAIT, us UIRESUME
+uiresume(hObject);
+else
+% The GUI is no longer waiting, just close it
+delete(hObject);
 end
-handles.R1 = R1;
-handles.R2 = R2;
-handles.R3 = R3;
-handles.reductora = reductora;
-guidata(hObject,handles);
