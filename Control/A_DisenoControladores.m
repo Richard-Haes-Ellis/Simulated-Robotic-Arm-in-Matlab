@@ -2,44 +2,44 @@
 answer = questdlg('¿Crear nuevo o cargar existente?','Diseño','Nuevo','Cargar','Cargar');
 switch answer
     case 'Cargar'
-        uiopen('load');
+        uiopen('load'); % Abre una ventana para selecionar ficheros que se cargaran en el workspace
         answer = questdlg('¿Desea editarlo?','Diseño','Editar','No','No');
         switch answer
             case 'Editar'
-                while(~strcmp(answer,'No'))
+                while(~strcmp(answer,'No')) % Si no se ha selecionado no se soigue con el bucle
                     answer = questdlg('Seleciona controlador:','Diseño','C1','C2','C3','C3');
                     switch answer
                         case 'C1'
                             rltool(Gs1,Crl1);
                             fprintf('Presiona una tecla Terminar...\n');
                             pause();
-                            Crl1 = C;
+                            Crl1 = C; % Crl1 es la variable que alamcena el controlador del eslabon 1 
                         case 'C2'
                             rltool(Gs2,Crl2);
                             fprintf('Presiona una tecla Terminar...\n');
                             pause();
-                            Crl2 = C;
+                            Crl2 = C; % Crl1 es la variable que alamcena el controlador del eslabon 2
                         case 'C3'
                             rltool(Gs3,Crl3);
                             fprintf('Presiona una tecla Terminar...\n');
                             pause();
-                            Crl3 = C;
+                            Crl3 = C; % Crl1 es la variable que alamcena el controlador del eslabon 3
                     end
                     answer = questdlg('¿Seguir editando?:','Diseño','Si','No','No');
                 end
             case 'No'
         end
     case 'Nuevo'
-        [tipoControl,reductora,modelo] = GUI()
+        [tipoControl,reductora,modelo] = GUI() % Abre una interfaz para elegir las opciones de diseño 
         switch modelo
             case 'realista'
-                load('modeloReal.mat');
+                load('modeloReal.mat'); % Carga en workspace el modelo real (Ma,Va,Ga)
             case 'ideal'
-                load('modeloIdeal.mat');
+                load('modeloIdeal.mat'); % Carga en workspace el modelo Ideal (Ma,Va,Ga)
         end
         switch reductora
             case 'con'
-                R1 = R(1,1);
+                R1 = R(1,1);  
                 R2 = R(2,2);
                 R3 = R(3,3);
             case 'sin'
@@ -109,12 +109,14 @@ end
 [Kp2,Ti2,Td2,N2] = pidstddata(Crl2);
 [Kp3,Ti3,Td3,N3] = pidstddata(Crl3);
 
+% imprimimos por pantalla info sobre los parametros de los controladores
 fprintf('Parametros del controlador 1:\nKp: %f\nTi: %f\nTd: %f\n\n',Kp1,Ti1,Td1);
 fprintf('Parametros del controlador 1:\nKp: %f\nTi: %f\nTd: %f\n\n',Kp2,Ti2,Td2);
 fprintf('Parametros del controlador 1:\nKp: %f\nTi: %f\nTd: %f\n\n',Kp3,Ti3,Td3);
 
 %% Generacion del codigo del controlador
-
+% Generamos un codigo u otro en funcion del controlador que hayamos elegido
+% Creamos un archivo que sera la funcion del controlador
 file = fopen( 'Controller.m', 'wt' );
 code = ['function senalControl = Controller(in)\n\n'... 
 'qr   = [in(1);  in(2);  in(3)];\n'... 
@@ -126,10 +128,10 @@ code = ['function senalControl = Controller(in)\n\n'...
 fprintf(file,code);
 
 switch tipoControl
-    case {'precompmed','precomdinmed','parcalculado'} % Son los que usan medidas
+    case {'precompmed','precomdinmed','parcalculado'}   % Son los que usan medidas
         fprintf(file,'q1 = q(1); q2 = q(2); q3 = q(3);\n');
         fprintf(file,'qd1 = qp(1); qd2 = qp(2); qd3 = qp(3);\n\n');
-    case {'precompref','precomdinref'} % Son los que usan referencias
+    case {'precompref','precomdinref'}                  % Son los que usan referencias
         fprintf(file,'q1 = qr(1); q2 = qr(2); q3 = qr(3);\n');
         fprintf(file,'qd1 = qp(1); qd2 = qp(2); qd3 = qp(3);\n\n');
 end
@@ -146,6 +148,7 @@ switch tipoControl
         fprintf(file,'Ga = [%s;\n%s;\n%s];\n\n',char(G_num(1)),char(G_num(2)),char(G_num(3)));
 end
 
+% Definimos los parametros de los controladores
 fprintf(file,'Kp = diag([%f\t%f\t%f]);\n',Kp1,Kp2,Kp3);
 fprintf(file,'Ki = diag([Kp(1,1)/%f\tKp(2,2)/%f\tKp(3,3)/%f]);\n',Ti1,Ti2,Ti3);
 fprintf(file,'Kd = diag([Kp(1,1)*%f\tKp(2,2)*%f\tKp(3,3)*%f]);\n\n',Td1,Td2,Td3);
@@ -187,6 +190,7 @@ fclose(file);
 
 fprintf('Controladora generada\n');
 
+% Mostramos en una ventana un resumen del diseño
 switch(tipoControl)
     case 'precompmed'
         tipo = sprintf('Precompensacion con medidas');
@@ -201,7 +205,7 @@ switch(tipoControl)
     case 'normal'
         tipo = sprintf('Normal');
 end 
-    
+
 msg = sprintf(['Tipo de control: %s\n\nParametros de los PD/PIDs:\n\n'...
     'Controlador 1:\nKp: %f\nTi: %f\nTd: %f\n\n' ...
     'Controlador 2:\nKp: %f\nTi: %f\nTd: %f\n\n' ...
