@@ -30,7 +30,7 @@ switch answer
             case 'No'
         end
     case 'Nuevo'
-        [tipoControl,reductora,modelo] = GUI();
+        [tipoControl,reductora,modelo] = GUI()
         switch modelo
             case 'realista'
                 load('modeloReal.mat');
@@ -61,38 +61,47 @@ switch answer
         B1 = eval(B1);          B2 = eval(B2);          B3 = eval(B3);
         
         % Se usa modelo doble integrador
-        if(strcmp(tipoControl,'parcalculado'))
-            % Funciones de trasferencia de los tres eslabones
-            Gs1 = tf([1],[1 0 0]);
-            Gs2 = tf([1],[1 0 0]);
-            Gs3 = tf([1],[1 0 0]);
-        % Se usa modelo del error dinamico
-        elseif(strcmp(tipoControl,'precompdinref') || strcmp(tipoControl,'precompdinmed'))
-            % Funciones de trasferencia de los tres eslabones
-            Gs1 = tf([Kt(1,1)*R1],[A1 0 0]);
-            Gs2 = tf([Kt(2,2)*R2],[A2 0 0]);
-            Gs3 = tf([Kt(3,3)*R3],[A3 0 0]);
-        % Se usa modelo linealizado normal
-        else
-            % Funciones de trasferencia de los tres eslabones
-            Gs1 = tf([Kt(1,1)*R1],[A1 B1 0]);
-            Gs2 = tf([Kt(2,2)*R2],[A2 B2 0]);
-            Gs3 = tf([Kt(3,3)*R3],[A3 B3 0]);
+        switch tipoControl
+            case {'parcalculado'}
+                % Funciones de trasferencia de los tres eslabones
+                Gs1 = tf([1],[1 0 0])
+                Gs2 = tf([1],[1 0 0])
+                Gs3 = tf([1],[1 0 0])
+            case {'precomdinref','precomdinmed'}
+                % Funciones de trasferencia de los tres eslabones
+                Gs1 = tf([Kt(1,1)*R1],[A1 0 0])
+                Gs2 = tf([Kt(2,2)*R2],[A2 0 0])
+                Gs3 = tf([Kt(3,3)*R3],[A3 0 0])
+            otherwise
+                % Funciones de trasferencia de los tres eslabones
+                Gs1 = tf([Kt(1,1)*R1],[A1 B1 0])
+                Gs2 = tf([Kt(2,2)*R2],[A2 B2 0])
+                Gs3 = tf([Kt(3,3)*R3],[A3 B3 0])
         end
         
-        % Root-locus (Calculo de controladores)
-        rltool(Gs1);
-        fprintf('Presiona una tecla para continuar con siguente controlador...\n');
-        pause();
-        Crl1 = C;
-        rltool(Gs2);
-        fprintf('Presiona una tecla para continuar con siguente controlador...\n');
-        pause();
-        Crl2 = C;
-        rltool(Gs3);
-        fprintf('Terminado...\n');
-        pause();
-        Crl3 = C;
+        switch tipoControl
+            case 'parcalculado'
+                rltool(Gs1);
+                fprintf('Presiona una tecla para terminar...\n');
+                pause();
+                Crl1 = C;
+                Crl2 = C;
+                Crl3 = C;
+            otherwise
+                % Root-locus (Calculo de controladores)
+                rltool(Gs1);
+                fprintf('Presiona una tecla para continuar con siguente controlador 2...\n');
+                pause();
+                Crl1 = C;
+                rltool(Gs2);
+                fprintf('Presiona una tecla para continuar con siguente controlador 3...\n');
+                pause();
+                Crl2 = C;
+                rltool(Gs3);
+                fprintf('Terminado. Press Enter...\n');
+                pause();
+                Crl3 = C;
+        end
 end
 
 % Extraemos los parametros de los controladores diseñados
@@ -117,24 +126,26 @@ code = ['function senalControl = Controller(in)\n\n'...
 fprintf(file,code);
 
 switch tipoControl
-    case {'precompmed','precompdinmed','parcalculado'} % Son los que usan medidas
+    case {'precompmed','precomdinmed','parcalculado'} % Son los que usan medidas
         fprintf(file,'q1 = q(1); q2 = q(2); q3 = q(3);\n');
-    case {'precompref','precompdinref'} % Son los que usan referencias
-        fprintf(file,'q1 = qr(1); qr2 = q(2); qr3 = q(3);\n');;
+        fprintf(file,'qd1 = qp(1); qd2 = qp(2); qd3 = qp(3);\n\n');
+    case {'precompref','precomdinref'} % Son los que usan referencias
+        fprintf(file,'q1 = qr(1); q2 = qr(2); q3 = qr(3);\n');
+        fprintf(file,'qd1 = qp(1); qd2 = qp(2); qd3 = qp(3);\n\n');
 end
 switch tipoControl
-    case {'parcalculado','precompdinref','precompdinmed'}
+    case {'parcalculado','precomdinref','precomdinmed'}
         fprintf(file,'Ma = [%s %s %s;\n%s %s %s;\n%s %s %s];\n\n', ...
-            char(N_num(1,1)),char(N_num(1,2)),char(N_num(1,3)), ...
-            char(N_num(2,1)),char(N_num(2,2)),char(N_num(2,3)), ...
-            char(N_num(3,1)),char(N_num(3,2)),char(N_num(3,3)));
+            char(M_num(1,1)),char(M_num(1,2)),char(M_num(1,3)), ...
+            char(M_num(2,1)),char(M_num(2,2)),char(M_num(2,3)), ...
+            char(M_num(3,1)),char(M_num(3,2)),char(M_num(3,3)));
         fprintf(file,'Ca = [%s;\n%s;\n%s];\n\n',char(V_num(1)),char(V_num(2)),char(V_num(3)));
         fprintf(file,'Ga = [%s;\n%s;\n%s];\n\n',char(G_num(1)),char(G_num(2)),char(G_num(3)));
     
     case {'precompmed','precompref'}
         fprintf(file,'Ga = [%s;\n%s;\n%s];\n\n',char(G_num(1)),char(G_num(2)),char(G_num(3)));
 end
-   
+
 fprintf(file,'Kp = diag([%f\t%f\t%f]);\n',Kp1,Kp2,Kp3);
 fprintf(file,'Ki = diag([Kp(1,1)/%f\tKp(2,2)/%f\tKp(3,3)/%f]);\n',Ti1,Ti2,Ti3);
 fprintf(file,'Kd = diag([Kp(1,1)*%f\tKp(2,2)*%f\tKp(3,3)*%f]);\n\n',Td1,Td2,Td3);
@@ -158,10 +169,10 @@ fprintf(file,code);
 switch tipoControl
     case {'precompref','precompmed'}
         fprintf(file,'Imk = Kp*ek + Kd*epk + Ki*ek_i + Ga;\n\n');
-	case {'precompdinref','precompdinmed'}
-        fprintf(file,'Imk = Kp*ek + Kd*epk + Ki*ek_i Ma*qppr + Ca*qp + Ga;\n\n');
+	case {'precomdinref','precomdinmed'}
+        fprintf(file,'Imk = Kp*ek + Kd*epk + Ki*ek_i + Ma*qppr + Ca + Ga;\n\n');
     case 'parcalculado'
-        fprintf(file,'Imk = Ma*(qppr + (Kp*ek + Kd*epk + Ki*ek_i)) + Ca*qp + Ga;\n\n');
+        fprintf(file,'Imk = Ma*(qppr + (Kp*ek + Kd*epk + Ki*ek_i)) + Ca + Ga;\n\n');
     case 'normal'
         fprintf(file,'Imk = Kp*ek + Kd*epk + Ki*ek_i;\n\n');
 end
@@ -178,12 +189,12 @@ fprintf('Controladora generada\n');
 
 switch(tipoControl)
     case 'precompmed'
-        tipo = sprintf('Precompensacion con medidas');cle
+        tipo = sprintf('Precompensacion con medidas');
 	case 'precompref'
         tipo = sprintf('Precompensacion con referencias');
-    case 'precompdinmed'
+    case 'precomdinmed'
         tipo = sprintf('Precompensacion dinamica con medidas');
-    case 'precompdinref'
+    case 'precomdinref'
         tipo = sprintf('Precompensacion dinamica con medidas');
     case 'parcalculado'
         tipo = sprintf('Par Calculado');

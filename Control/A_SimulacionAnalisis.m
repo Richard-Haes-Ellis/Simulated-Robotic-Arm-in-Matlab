@@ -147,7 +147,7 @@ figure('units','normalized','outerposition',[0 0 1 1])
 
 % Corriente Im1
 splt = subplot(3,2,1);
-plt = plot(t(1:end-3),Im(:,1));
+plt = plot(t,Im(:,1));
 set(plt(1),'DisplayName','Corriente $Im_1$');
 leg = legend(splt,'show');
 set(leg,'Interpreter','latex');
@@ -156,7 +156,7 @@ xlabel('time');
 grid;
 % Corriente Im2
 splt = subplot(3,2,3);
-plt = plot(t(1:end-3),Im(:,2));
+plt = plot(t,Im(:,2));
 set(plt(1),'DisplayName','Corriente $Im_2$');
 leg = legend(splt,'show');
 set(leg,'Interpreter','latex');
@@ -165,7 +165,7 @@ xlabel('time');
 grid;
 % Corriente Im3
 splt = subplot(3,2,5);
-plt = plot(t(1:end-3),Im(:,3));
+plt = plot(t,Im(:,3));
 set(plt(1),'DisplayName','Corriente $Im_3$');
 leg = legend(splt,'show');
 set(leg,'Interpreter','latex');
@@ -185,7 +185,7 @@ xlabel('Z');
 grid;
 
 splt = subplot(3,2,6);
-plt  = plot(t(1:end-3),vecnorm((xyz-xyzr)')','b');
+plt  = plot(t,vecnorm((xyz-xyzr)')','b');
 set(plt(1),'DisplayName','Error distancia');
 leg = legend(splt,'show');
 set(leg,'Interpreter','latex');
