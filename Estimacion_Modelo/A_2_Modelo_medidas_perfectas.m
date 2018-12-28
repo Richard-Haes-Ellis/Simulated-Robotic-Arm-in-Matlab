@@ -199,7 +199,7 @@ qdd = inv(M_num)*(Kt*R*Im - V_num - G_num);
 
 save('../Control/modeloIdeal.mat','M_num','V_num','G_num','Kt','R');
 
-matlabFunction(qdd,'file','modeloRobot','vars',{[qd;q],Im});
+matlabFunction(qdd,'file','modeloIdeal','vars',{[qd;q],Im});
 
 fprintf('Terminado.\n\n');
 

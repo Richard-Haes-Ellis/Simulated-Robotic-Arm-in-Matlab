@@ -162,6 +162,9 @@ for j=1:num_param
     fprintf('Desviacion: %d: %f. \t\t parametro: %s\n',j,Sigma_r(j),char(Theta_reduced(j)));
 end
 
+Theta_hat (6) = 0;
+Theta_hat (10) = 0;
+
 clear q1 qd1 qdd1 q2 qd2 qdd2 q3 qd3 qdd3 g
 syms q1 qd1 qdd1 q2 qd2 qdd2 q3 qd3 qdd3 g real
 
@@ -170,10 +173,6 @@ pause();
 fprintf('Applicando Newton-Euler...\n');
 
 Tau = eval(Gamma_reduced*Theta_hat)
-
-
-Theta_hat (6) = 0;
-Theta_hat (10) = 0;
 
 syms T1 T2 T3 real;
 
@@ -283,7 +282,7 @@ qdd = inv(M_num)*(Kt*R*Im - V_num - G_num);
 
 save('../Control/modeloReal.mat','M_num','V_num','G_num','Kt','R');
 
-matlabFunction(qdd,'file','modeloRobot','vars',{[qd;q],Im});
+matlabFunction(qdd,'file','modeloReal','vars',{[qd;q],Im});
 
 fprintf('Terminado.\n\n');
 
