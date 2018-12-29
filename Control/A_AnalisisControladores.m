@@ -27,7 +27,7 @@ step(Gbc2);
 title('Seguimiento');
 grid;
 subplot(3,2,4);
-step(GbcPert2);
+step(GbcPert2);mu
 title('Regulación');
 grid;
 subplot(3,2,5);
