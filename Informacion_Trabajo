@@ -1,0 +1,31 @@
+
+a) ANALISIS CINEMATICO Y DINAMICO
+
+  1.- Ecuaciones simbolicas modelo directo e indirecto            (HECHO)
+  2.- Obtencion del modelo dinamico del robot                     (HECHO)
+
+b) ESTIMACION DE PARAMETROS DINAMICOS DEL ROBOT
+
+  3.- Simulacion robot real,medidas reales (cuantizador, ruido)   (HECHO)
+  4.- Identificacion de parametros con medidas reales/ideales     (HECHO) 
+  5.- Modelo basado en los resutados obtenidos                    (HECHO)
+
+c) CONTROL CINEMATICO
+
+  6.- Generador de trayectorias (Interpolador Trapezoidal)        (FALTA)
+      (Falta por hacer el trapezoidal)
+
+  7.- Generador de trayectorias (Polinomicos)                     (HECHO)
+
+d) CONTROL DINAMICO
+
+  8.- Controldores PD/PID sin/con precompensacion de gravedad     (MEDIO)
+      estatico/dinamico y par caluclado sin/con reductoras            
+      (Falta sin reductoras y con modelo estimado)
+
+  9.- Comparacion con diferentes controles y conculsiones         (FALTA)
+      - Factor de reducion
+      - Incertidumbres en el modelo
+      - Implementacion en discreto/continuo
+      - Trayectorias deseadas
+      (TODO xd)
