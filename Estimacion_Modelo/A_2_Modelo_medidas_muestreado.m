@@ -61,27 +61,36 @@ for i=1:1:length(Ireal)
     end 
 end
 
+%%
+
 figure('units','normalized','outerposition',[0 0 1 1])
-subplot(3,2,1);
-plot(tout,q(:,2),'r');          % Perfecto
-hold on;
-plot(t,qreal(:,2));             % Real
-hold on;
-title('q Perfecto(ROJO) Medido(AZUL)');
-subplot(3,2,3);
-plot(tout,qd(:,2),'r');             % Perfecto
-hold on;
-plot(t,qdreal(:,2));                % Real
-hold on;
-plot(t,qdrealfiltered(:,2),'g');	% Filtrado
-hold on;
-title('qd Perfecto(ROJO) Medido(AZUL) Filtrado(VERDE)');
-subplot(3,2,5);
-plot(tout,qdd(:,2),'r');    % Perfecto
-hold on;
-plot(t,qddreal(:,2));       % calculado
-hold on;
-title('qdd Perfecto(ROJO) Calculado(AZUL)');
+slt = subplot(3,2,1);
+plt = plot(tout,q(:,2),t,qreal(:,2)); 
+set(plt(1),'DisplayName','Medida Perfecta');
+set(plt(2),'DisplayName','Medida Real');
+legend(slt,'show');
+grid;
+ylabel('rad');
+xlabel('t');
+
+slt = subplot(3,2,3);
+plt = plot(tout,qd(:,2),t,qdreal(:,2),t,qdrealfiltered(:,2),'g');
+set(plt(1),'DisplayName','Medida Perfecta');
+set(plt(2),'DisplayName','Medida Real');
+set(plt(3),'DisplayName','Medida Filtrada');
+legend(slt,'show');
+grid;
+ylabel('rad/s');
+xlabel('t');
+
+slt = subplot(3,2,5);
+plt = plot(tout,qdd(:,2),t,qddreal(:,2));  
+set(plt(1),'DisplayName','Medida Perfecta');
+set(plt(2),'DisplayName','Medida Calculada');
+legend(slt,'show');
+grid;
+ylabel('rad/s²');
+xlabel('t');
 
 subplot(3,2,2);
 plot(tout(1:fin/Ts),abs(q(1:fin/Ts,2)-qreal(1:fin/Ts,2)),'r');
@@ -105,6 +114,7 @@ title('error cometido de qdd');
 fprintf('Resutlado de filtrar y calcular datos.\n');
 pause();
 
+%%
 % Eliminamos el primer segundo de muestras y cojemos 1 de cada 10  
  qe   = qreal(1000:10:end,:);
  qde  = qdreal(1000:10:end,:);

@@ -463,26 +463,41 @@ noise = 0.01;
 fprintf('Empezando simulacion..\n');
 sim('analisisDinamico.slx'); 
 fprintf('Fin de simulacion.\n');
+%%
 
 % Representamos las corrientes y las salidas del modelo real y modelado
 figure('units','normalized','outerposition',[0 0 1 1])
-subplot(3,2,1);
-plot(tout,Im(:,1));
-title('Corrientes');
-subplot(3,2,3);
-plot(tout,Im(:,2));
-subplot(3,2,5);
-plot(tout,Im(:,3));
+subplot1 = subplot(3,2,1);
+plot1 = plot(tout,Im(:,1));
+set(plot1(1),'DisplayName','Corriente I_1');
+legend(subplot1,'show');
+grid;
+subplot1 = subplot(3,2,3);
+plot1 = plot(tout,Im(:,2));
+set(plot1(1),'DisplayName','Corriente I_2');
+legend(subplot1,'show');
+grid;
+subplot1 = subplot(3,2,5);
+plot1 = plot(tout,Im(:,3));
+set(plot1(1),'DisplayName','Corriente I_3');
+legend(subplot1,'show');
+grid;
 
-subplot(3,2,2);
-plot(tout,q(:,1));
-title('q');
+subplot1 = subplot(3,2,2);
+plot1 = plot(tout,q(:,1));
+set(plot1(1),'DisplayName','Posicion Angular 1');
+legend(subplot1,'show');
+grid;
 subplot1 = subplot(3,2,4);
 plot1 = plot(tout,q(:,2));
+set(plot1(1),'DisplayName','Posicion Angular 2');
 legend(subplot1,'show');
-subplot(3,2,6);
-plot(tout,q(:,3));
-
+grid;
+subplot1 = subplot(3,2,6);
+plot1 = plot(tout,q(:,3));
+set(plot1(1),'DisplayName','Posicion Angular 3');
+legend(subplot1,'show');
+grid;
 
 save('modeloSimbolico.mat');
 
