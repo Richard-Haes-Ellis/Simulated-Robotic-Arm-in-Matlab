@@ -22,11 +22,11 @@ function trayectoria = genTrayectoria3(in)
     for i = 1:N+1 
         % Modelo cinematico Inverso
         if fst % Si es el primer punto claculamos los angulos en una configuracion
-            q = [q mci(pm(:,i)',[1 1 1],1)];
+            q = [q mci(pm(:,i)',1)];
             fst = 0;
         else % Si ya se calculo el primero, caluclamos las dos posiblidades
-            q1 = mci(pm(:,i)',[1 1 1],0);
-            q2 = mci(pm(:,i)',[1 1 1],1);
+            q1 = mci(pm(:,i)',0);
+            q2 = mci(pm(:,i)',1);
             % Miramos cual es el minimo recorrido a las dos posiblidades y la
             % asignamos
             if(min(abs((q(3,i-1)-q1(3))),abs((q(3,i-1)-q2(3))))==abs((q(3,i-1)-q1(3))))
@@ -117,9 +117,9 @@ function trayectoria = genTrayectoria3(in)
                        ddsEc(t,sT+T*(i-1))*sParams(:,i,2);
                        ddsEc(t,sT+T*(i-1))*sParams(:,i,3)];
         
-    elseif(t>=sT+tT)
-        trayectoria = [mci(fPos,[1 1 1],1)' 0 0 0 0 0 0]';
+    elseif(t>sT+tT)
+        trayectoria = [mci(fPos,c)' 0 0 0 0 0 0]';
     else
-        trayectoria = [mci(iPos,[1 1 1],1)' 0 0 0 0 0 0]';
+        trayectoria = [mci(iPos,1)' 0 0 0 0 0 0]';
     end
 end

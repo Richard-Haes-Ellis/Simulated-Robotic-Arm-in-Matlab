@@ -1,12 +1,12 @@
 function trayectoria = genTrayectoria5(in)
     
-    % format longg
     iPos = [in(1); in(2); in(3)];    % Start point
     fPos = [in(4); in(5); in(6)];    % Stop  point
     N    = in(7);              % Number of points in-between trajectory
     sT   = in(8);              % Start time
     tT   = in(9);              % Trajectory time
     t    = in(10);
+   
     T = tT/N;   % Ciclo de un tramo
     
     % Recta que pasa por los dos puntos
