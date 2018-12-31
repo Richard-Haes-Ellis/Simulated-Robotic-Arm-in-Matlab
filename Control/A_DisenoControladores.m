@@ -3,7 +3,7 @@ answer = questdlg('¿Crear nuevo o cargar existente?','Diseño','Nuevo','Cargar'
 switch answer
     case 'Cargar'
         uiopen('load'); % Abre una ventana para selecionar ficheros que se cargaran en el workspace
-        answer = questdlg('¿Desea editarlo?','Diseño','Editar','	','No');
+        answer = questdlg('¿Desea editarlo?','Diseño','Editar','No','No');
         switch answer
             case 'Editar'
                 while(~strcmp(answer,'No')) % Si no se ha selecionado no se soigue con el bucle
