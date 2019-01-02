@@ -23,7 +23,7 @@ function q = mci(xyz,pose)
     alfa = atan2( L3*sin(q(3)) , (L2 + L3*cos(q(3))) );
     
     q(2)  = beta - alfa;
-    q(1)  = atan2(y,x);
+    q(1)  = atan2( ,x);
     
     q = q';
     

@@ -57,8 +57,13 @@ switch answer
         q1  = 0; q2  = 0; q3  = 0;
         qd1 = 0; qd2 = 0; qd3 = 0;
         
-        A1 = eval(M_num(1,1));  A2 = eval(M_num(2,2));  A3 = eval(M_num(3,3));
-        B1 = eval(B1);          B2 = eval(B2);          B3 = eval(B3);
+        A1 = eval(M_num(1,1))
+        A2 = eval(M_num(2,2))
+        A3 = eval(M_num(3,3))
+        
+        B1 = eval(B1)
+        B2 = eval(B2)
+        B3 = eval(B3)
         
         % Se usa modelo doble integrador
         switch tipoControl

@@ -172,8 +172,8 @@ for j=1:num_param
     fprintf('Desviacion: %d: %f. \t\t parametro: %s\n',j,Sigma_r(j),char(Theta_reduced(j)));
 end
 
-Theta_hat (6) = 0;
-Theta_hat (10) = 0;
+Theta_hat (6)  = 0.0008;
+Theta_hat (10) = 0.0013;
 
 clear q1 qd1 qdd1 q2 qd2 qdd2 q3 qd3 qdd3 g
 syms q1 qd1 qdd1 q2 qd2 qdd2 q3 qd3 qdd3 g real
