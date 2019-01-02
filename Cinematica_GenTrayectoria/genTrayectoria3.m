@@ -101,7 +101,6 @@ function trayectoria = genTrayectoria3(in)
         i = ceil((t-sT)/T);
         
         
-        disp(i);
         % Posiciones articulares q1 q2 q3
         trayectoria = [sEc(t,sT+T*(i-1))*sParams(:,i,1);
                        sEc(t,sT+T*(i-1))*sParams(:,i,2);
