@@ -7,8 +7,14 @@ function trayectoria = genTrayectoria5(in)
     sT   = in(8);              % Start time
     tT   = in(9);              % Trajectory time
     t    = in(10);
-    T = tT/N;   % Ciclo de un tramo
     
+    
+    persistent T sParams sEc dsEc ddsEc
+    
+    if(t<1e-8)
+    
+    T = tT/N;   % Ciclo de un tramo
+        
     % Recta que pasa por los dos puntos
     p = @(t) (fPos-iPos)*((t-sT)/tT) + iPos; % Line that pases through the two points
 
@@ -22,7 +28,7 @@ function trayectoria = genTrayectoria5(in)
     for i = 1:N+1 
         % Modelo cinematico Inverso
         if fst % Si es el primer punto claculamos los angulos en una configuracion
-            q = [q mci(pm(:,i)',1)];
+            q = [q mci(pm(:,i)',0)];
             fst = 0;
         else % Si ya se calculo el primero, caluclamos las dos posiblidades
             q1 = mci(pm(:,i)',0);
@@ -100,7 +106,7 @@ function trayectoria = genTrayectoria5(in)
     dsEc  = @(t,ti) [0  1      2*(t-ti)    3*(t-ti)^2   4*(t-ti)^3   5*(t-ti)^4];
     ddsEc = @(t,ti) [0  0      2           6*(t-ti)^1  12*(t-ti)^2  20*(t-ti)^3]; 
     
- 
+    end
 
     if(t>sT && t<=sT+tT)
         i = ceil((t-sT)/T);
@@ -123,6 +129,6 @@ function trayectoria = genTrayectoria5(in)
     elseif(t>sT+tT)
         trayectoria = [mci(fPos,c)' 0 0 0 0 0 0]';
     else
-        trayectoria = [mci(iPos,1)' 0 0 0 0 0 0]';
+        trayectoria = [mci(iPos,0)' 0 0 0 0 0 0]';
     end
 end

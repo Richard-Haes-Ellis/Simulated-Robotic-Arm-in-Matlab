@@ -153,6 +153,13 @@ switch tipoControl
         fprintf(file,'Ga = [%s;\n%s;\n%s];\n\n',char(G_num(1)),char(G_num(2)),char(G_num(3)));
 end
 
+switch tipoControl
+    case 'normal'
+    otherwise 
+        fprintf(file,'R = diag([%f %f %f]);\n',R1,R2,R3);
+        fprintf(file,'K = diag([%f %f %f]);\n\n',K1,K2,K3);
+end
+
 % Definimos los parametros de los controladores
 fprintf(file,'Kp = diag([%f\t%f\t%f]);\n',Kp1,Kp2,Kp3);
 fprintf(file,'Ki = diag([Kp(1,1)/%f\tKp(2,2)/%f\tKp(3,3)/%f]);\n',Ti1,Ti2,Ti3);
@@ -176,11 +183,11 @@ code = ['persistent ek_i ek_1\n' ...
 fprintf(file,code);
 switch tipoControl
     case {'precompref','precompmed'}
-        fprintf(file,'Imk = Kp*ek + Kd*epk + Ki*ek_i + Ga;\n\n');
+        fprintf(file,'Imk = Kp*ek + Kd*epk + Ki*ek_i + inv(R*K)*Ga;\n\n');
 	case {'precomdinref','precomdinmed'}
-        fprintf(file,'Imk = Kp*ek + Kd*epk + Ki*ek_i + Ma*qppr + Ca + Ga;\n\n');
+        fprintf(file,'Imk = Kp*ek + Kd*epk + Ki*ek_i + inv(R*K)*Ma*qppr + inv(R*K)*Ca + inv(R*K)*Ga;\n\n');
     case 'parcalculado'
-        fprintf(file,'Imk = Ma*(qppr + (Kp*ek + Kd*epk + Ki*ek_i)) + Ca + Ga;\n\n');
+        fprintf(file,'Imk = inv(R*K)*Ma*(qppr + (Kp*ek + Kd*epk + Ki*ek_i)) + inv(R*K)*Ca + inv(R*K)*Ga;\n\n');
     case 'normal'
         fprintf(file,'Imk = Kp*ek + Kd*epk + Ki*ek_i;\n\n');
 end
@@ -216,4 +223,15 @@ msg = sprintf(['Tipo de control: %s\n\nParametros de los PD/PIDs:\n\n'...
     'Controlador 2:\nKp: %f\nTi: %f\nTd: %f\n\n' ...
     'Controlador 3:\nKp: %f\nTi: %f\nTd: %f\n'],tipo,Kp1,Ti1,Td1,Kp2,Ti2,Td2,Kp3,Ti3,Td3);
 msgbox(msg);
+
+
+%% Guardar controlador
+
+answer = questdlg('¿Guardar Controlador?','Prompt','Si','No','Si');
+
+switch answer
+    case 'Si'
+        uisave({'Crl1','Crl2','Crl3','Gs1','Gs2','Gs3','M_num','V_num','G_num','R1','R2','R3','tipoControl'});
+    case 'No'
+end
 

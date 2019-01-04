@@ -27,13 +27,14 @@ Im_R_K_exp  = [];
 g=9.81;
 
 % Creamos un filtro para filtrar datos del tacometro 
-[Numeradorf,Denominadorf] = butter(1,4*Ts/2,'Low'); 
+% [Numeradorf,Denominadorf] = butter(1,4*Ts/2,'Low'); 
 
 
 d = designfilt('lowpassfir', ...
     'PassbandFrequency',0.005,'StopbandFrequency',0.015, ...
     'PassbandRipple',0.2,'StopbandAttenuation',120, ...
     'DesignMethod','equiripple');
+
 qdrealfiltered = filtfilt(d,qdreal);
          
 % Aplicamos el filtro obtenido a la velocidad
@@ -41,14 +42,6 @@ qdrealfiltered = filtfilt(d,qdreal);
 
 % Derivamos la poscion filtrada para obtener la velocidad
 for i=1:1:length(Ireal)
-   
-    qreal(i,1);
-    qreal(i,2);
-    qreal(i,3);
-    
-    qdreal(i,1);
-    qdreal(i,2);
-    qdreal(i,3);
 
     if (i==1)
         qddreal(i,1)=qdd(i,1);
@@ -117,7 +110,7 @@ pause();
 %%
 % Eliminamos el primer segundo de muestras y cojemos 1 de cada 10  
  qe   = qreal(1000:10:end,:);
- qde  = qdreal(1000:10:end,:);
+ qde  = qdrealfiltered(1000:10:end,:);
  qdde = qddreal(1000:10:end,:);
  Ime  = Ireal(1000:10:end,:);
 

@@ -1,5 +1,4 @@
 
-load('TrasferFunctions.mat');
 
 uiopen('load');
 

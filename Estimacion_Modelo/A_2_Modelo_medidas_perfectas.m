@@ -49,7 +49,7 @@ for i=1:1:length(Ime)
     qdd1 = qdde(i,1);
     qdd2 = qdde(i,2);
     qdd3 = qdde(i,3);
-    
+    lscov
     % Con ese bucle tenedremos una matriz de gamma con todos los experimeitos y otra
     % Matriz con las excitaciones del motor
     

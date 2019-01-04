@@ -7,7 +7,7 @@ Ts_reference = 0.015;
 % Tiempo de muestreo del control 
 Ts_control = 0.001;
 % Tiempo de simulacion
-fin=8;
+fin=5;
 % Tiempo de muestreo para analisis 
 ts = 0.001;
 
