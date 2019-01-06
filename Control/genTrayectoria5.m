@@ -6,10 +6,10 @@ function trayectoria = genTrayectoria5(in)
     N    = in(7);              % Number of points in-between trajectory
     sT   = in(8);              % Start time
     tT   = in(9);              % Trajectory time
-    t    = in(10);
+    t    = in(10);              
     
     
-    persistent T sParams sEc dsEc ddsEc
+    persistent T sParams sEc dsEc ddsEc c
     
     if(t<1e-8)
     
