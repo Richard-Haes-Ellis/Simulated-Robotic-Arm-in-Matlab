@@ -143,7 +143,7 @@ ylabel('rad/s');
 xlabel('time');
 grid;
 
-figure('units','normalized','outerposition',[0 0 1 1])
+figure1 = figure('units','normalized','outerposition',[0 0 1 1]);
 
 % Corriente Im1
 splt = subplot(3,2,1);
@@ -163,6 +163,7 @@ set(leg,'Interpreter','latex');
 ylabel('Amperaje');
 xlabel('time');
 grid;
+
 % Corriente Im3
 splt = subplot(3,2,5);
 plt = plot(t,Im(:,3));
@@ -174,18 +175,24 @@ xlabel('time');
 grid;
 
 % Trayectoria de referencia vs medida
-splt = subplot(3,2,[2 4]);
-plt  = plot(xyz(:,2),xyz(:,3),'r',xyzr(:,2),xyzr(:,3),'b');
-set(plt(1),'DisplayName','Trayectoria medida');
-set(plt(2),'DisplayName','Trayectoria referencia');
-leg = legend(splt,'show');
-set(leg,'Interpreter','latex');
-ylabel('Y');
-xlabel('Z');
-grid;
+axes1 = axes('Parent',figure1,...
+    'Position',[0.570340909090909 0.409632352941176 0.334659090909091 0.515367647058823]);
+% Create line
+line(xyz(2:end,1),xyz(2:end,2),xyz(2:end,3),'Parent',axes1,'DisplayName','Trayectoria medida','Color',[1 0 0]);
+line(xyzr(2:end,1),xyzr(2:end,2),xyzr(2:end,3),'Parent',axes1,'DisplayName','Trayectoria referencia');
+% Create zlabel
+zlabel('z');
+ylabel('y');
+xlabel('x');
+view(axes1,[-28.4 24.4]);
+grid(axes1,'on');
+legend1 = legend(axes1,'show');
+set(legend1,'Interpreter','latex','Location','northeast');
+hold(splt,'off');
 
+% Error distancia
 splt = subplot(3,2,6);
-plt  = plot(t,vecnorm((xyz-xyzr)')','b');
+plt  = plot(t(2:end),vecnorm((xyz(2:end,:)-xyzr(2:end,:))')','b');
 set(plt(1),'DisplayName','Error distancia');
 leg = legend(splt,'show');
 set(leg,'Interpreter','latex');

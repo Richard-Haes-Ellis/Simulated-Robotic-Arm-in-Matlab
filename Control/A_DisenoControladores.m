@@ -1,4 +1,8 @@
 
+Kt =[0.5 0   0;
+     0   0.4 0;
+     0   0   0.35];
+
 answer = questdlg('¿Crear nuevo o cargar existente?','Diseño','Nuevo','Cargar','Cargar');
 switch answer
     case 'Cargar'
@@ -157,7 +161,7 @@ switch tipoControl
     case 'normal'
     otherwise 
         fprintf(file,'R = diag([%f %f %f]);\n',R1,R2,R3);
-        fprintf(file,'K = diag([%f %f %f]);\n\n',K1,K2,K3);
+        fprintf(file,'K = diag([%f %f %f]);\n\n',Kt(1,1),Kt(2,2),Kt(3,3));
 end
 
 % Definimos los parametros de los controladores
