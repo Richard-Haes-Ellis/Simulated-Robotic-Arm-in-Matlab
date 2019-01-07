@@ -124,15 +124,15 @@ end
 
 % imprimimos por pantalla info sobre los parametros de los controladores
 fprintf('Parametros del controlador 1:\nKp: %f\nTi: %f\nTd: %f\n\n',Kp1,Ti1,Td1);
-fprintf('Parametros del controlador 1:\nKp: %f\nTi: %f\nTd: %f\n\n',Kp2,Ti2,Td2);
-fprintf('Parametros del controlador 1:\nKp: %f\nTi: %f\nTd: %f\n\n',Kp3,Ti3,Td3);
+fprintf('Parametros del controlador 2:\nKp: %f\nTi: %f\nTd: %f\n\n',Kp2,Ti2,Td2);
+fprintf('Parametros del controlador 3:\nKp: %f\nTi: %f\nTd: %f\n\n',Kp3,Ti3,Td3);
 
 %% Generacion del codigo del controlador
 % Generamos un codigo u otro en funcion del controlador que hayamos elegido
 % Creamos un archivo que sera la funcion del controlador
 file = fopen( 'Controller.m', 'wt' );
 code = ['function senalControl = Controller(in)\n\n'... 
-'qr   = [in(1);  in(2);  in(3)];\n'... 
+'qr   = [in(1);  in(2);  in(3)];\n'...
 'q    = [in(4);  in(5);  in(6)];\n'... 
 'qpr  = [in(7);  in(8);  in(9)];\n'... 
 'qp   = [in(10); in(11); in(12)];\n'...  
@@ -219,7 +219,7 @@ switch(tipoControl)
     case 'precomdinmed'
         tipo = sprintf('Precompensacion dinamica con medidas');
     case 'precomdinref'
-        tipo = sprintf('Precompensacion dinamica con medidas');
+        tipo = sprintf('Precompensacion dinamica con referencias');
     case 'parcalculado'
         tipo = sprintf('Par Calculado');
     case 'normal'
