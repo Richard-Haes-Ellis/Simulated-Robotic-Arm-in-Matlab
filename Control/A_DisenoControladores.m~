@@ -1,4 +1,8 @@
 
+Kt =[0.5 0 0;
+     0  0.4         0;
+         0         0    0.3500]
+
 answer = questdlg('¿Crear nuevo o cargar existente?','Diseño','Nuevo','Cargar','Cargar');
 switch answer
     case 'Cargar'
@@ -154,10 +158,10 @@ switch tipoControl
 end
 
 switch tipoControl
-    case {'normal'}
-        fprintf(file,'Ga = [%s;\n%s;\n%s];\n\n',char(G_num(1)),char(G_num(2)),char(G_num(3)));
+    case 'normal'
     otherwise 
-        
+        fprintf(file,'R = diag([%f %f %f]);\n',R1,R2,R3);
+        fprintf(file,'K = diag([%f %f %f]);\n\n',K1,K2,K3);
 end
 
 % Definimos los parametros de los controladores
@@ -183,11 +187,11 @@ code = ['persistent ek_i ek_1\n' ...
 fprintf(file,code);
 switch tipoControl
     case {'precompref','precompmed'}
-        fprintf(file,'Imk = Kp*ek + Kd*epk + Ki*ek_i + Ga;\n\n');
+        fprintf(file,'Imk = Kp*ek + Kd*epk + Ki*ek_i + inv(R*K)*Ga;\n\n');
 	case {'precomdinref','precomdinmed'}
-        fprintf(file,'Imk = Kp*ek + Kd*epk + Ki*ek_i + Ma*qppr + Ca + Ga;\n\n');
+        fprintf(file,'Imk = Kp*ek + Kd*epk + Ki*ek_i + inv(R*K)*Ma*qppr + inv(R*K)*Ca + inv(R*K)*Ga;\n\n');
     case 'parcalculado'
-        fprintf(file,'Imk = Ma*(qppr + (Kp*ek + Kd*epk + Ki*ek_i)) + Ca + Ga;\n\n');
+        fprintf(file,'Imk = inv(R*K)*Ma*(qppr + (Kp*ek + Kd*epk + Ki*ek_i)) + inv(R*K)*Ca + inv(R*K)*Ga;\n\n');
     case 'normal'
         fprintf(file,'Imk = Kp*ek + Kd*epk + Ki*ek_i;\n\n');
 end
