@@ -1,4 +1,8 @@
 
+Rt =[50 0  0;
+     0  30 0;
+     0  0  15];
+
 Kt =[0.5 0   0;
      0   0.4 0;
      0   0   0.35];
@@ -160,7 +164,7 @@ end
 switch tipoControl
     case 'normal'
     otherwise 
-        fprintf(file,'R = diag([%f %f %f]);\n',R1,R2,R3);
+        fprintf(file,'R = diag([%f %f %f]);\n',Rt(1,1),Rt(2,2),Rt(3,3));
         fprintf(file,'K = diag([%f %f %f]);\n\n',Kt(1,1),Kt(2,2),Kt(3,3));
 end
 
