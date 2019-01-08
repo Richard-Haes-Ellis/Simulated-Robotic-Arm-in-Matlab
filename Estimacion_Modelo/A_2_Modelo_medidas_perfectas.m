@@ -36,7 +36,7 @@ Ime  = Im( 1000:10: end,:);
 
 % La matriz gamma la rellenamos con datos del experimiento
 for i=1:1:length(Ime)
-    fprintf('Evaluando gamma... %f%%',100*i/length(Ime));
+    %fprintf('Evaluando gamma... %f%%',100*i/length(Ime));
     
     q1 = qe(i,1);
     q2 = qe(i,2);
@@ -49,14 +49,14 @@ for i=1:1:length(Ime)
     qdd1 = qdde(i,1);
     qdd2 = qdde(i,2);
     qdd3 = qdde(i,3);
-    lscov
+    
     % Con ese bucle tenedremos una matriz de gamma con todos los experimeitos y otra
     % Matriz con las excitaciones del motor
     
     Gamma_exp  = [Gamma_exp; eval(Gamma_reduced)];
     Im_R_K_exp = [Im_R_K_exp; K*R*Ime(i,:)'];
    
-    fprintf(repmat('\b',1,length(sprintf('Evaluando gamma... %f%%',100*i/length(Ime)))));
+    %fprintf(repmat('\b',1,length(sprintf('Evaluando gamma... %f%%',100*i/length(Ime)))));
 end
 fprintf('Hecho!\n');
 

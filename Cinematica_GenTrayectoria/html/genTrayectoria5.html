@@ -1,0 +1,343 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>genTrayectoria5</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-01-08"><meta name="DC.source" content="genTrayectoria5.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> trayectoria = genTrayectoria5(in)
+
+    iPos = [in(1); in(2); in(3)];    <span class="comment">% Start point</span>
+    fPos = [in(4); in(5); in(6)];    <span class="comment">% Stop  point</span>
+    N    = in(7);              <span class="comment">% Number of points in-between trajectory</span>
+    sT   = in(8);              <span class="comment">% Start time</span>
+    tT   = in(9);              <span class="comment">% Trajectory time</span>
+    t    = in(10);
+
+    <span class="keyword">persistent</span> T sParams sEc dsEc ddsEc c
+
+    <span class="keyword">if</span>(t&lt;1e-8)
+
+    T = tT/N;   <span class="comment">% Ciclo de un tramo</span>
+
+    <span class="comment">% Recta que pasa por los dos puntos</span>
+    p = @(t) (fPos-iPos)*((t-sT)/tT) + iPos; <span class="comment">% Line that pases through the two points</span>
+
+    <span class="comment">% Dividimos la trayectoria en partes iguales segun N</span>
+    tP = sT:T:(sT+tT);  <span class="comment">% We devide the time interval by the numeber N</span>
+    pm = p(tP);         <span class="comment">% We calculate the points for those times</span>
+
+    <span class="comment">% Con el MCI calculamos las coordenadas articulares para cada uno de esos puntos</span>
+    q = [];     <span class="comment">% Creamos un espacio de memoria para las coordenadas articulares</span>
+    fst = 1;    <span class="comment">% Determina si se ha calculado ya las articulaciones para el primer punto</span>
+    <span class="keyword">for</span> i = 1:N+1
+        <span class="comment">% Modelo cinematico Inverso</span>
+        <span class="keyword">if</span> fst <span class="comment">% Si es el primer punto claculamos los angulos en una configuracion</span>
+            q = [q mci(pm(:,i)',0)];
+            fst = 0;
+        <span class="keyword">else</span> <span class="comment">% Si ya se calculo el primero, caluclamos las dos posiblidades</span>
+            q1 = mci(pm(:,i)',0);
+            q2 = mci(pm(:,i)',1);
+            <span class="comment">% Miramos cual es el minimo recorrido a las dos posiblidades y la</span>
+            <span class="comment">% asignamos</span>
+            <span class="keyword">if</span>(min(abs((q(3,i-1)-q1(3))),abs((q(3,i-1)-q2(3))))==abs((q(3,i-1)-q1(3))))
+                q = [q q1];
+                c = 0;
+            <span class="keyword">else</span>
+                q = [q q2];
+                c = 1;
+            <span class="keyword">end</span>
+        <span class="keyword">end</span>
+
+    <span class="keyword">end</span>
+
+
+    <span class="comment">% Condiciones de contorno para el calculo de los parametros del polinomio de interpolacion</span>
+    <span class="comment">% Condiciones de contorno de posicion</span>
+
+    Params  = [];
+    sParams = zeros(6,N,3);
+    qSt     = [];
+
+    <span class="comment">% Matriz con los coericientes de las ecuaciones del polinomio interpolador</span>
+    <span class="comment">% con sus derivadas primeras y segundas para un tiempo (t-ti) = T</span>
+    TM = [1   T^1   T^2   T^3    T^4    T^5;
+          0 1*T^0 2*T^1 3*T^2  4*T^3  5*T^4;
+          0     0 2^T^0 6*T^1 12*T^2 20*T^3;
+          1     0     0     0      0      0;
+          0     1     0     0      0      0;
+          0     0     2     0      0      0];
+
+    dq = zeros(1,N+1);
+    <span class="keyword">for</span> i=1:N <span class="comment">% Para N tramos</span>
+        Params = [];
+        <span class="keyword">for</span> j=1:3  <span class="comment">% Para las tres articulaciones</span>
+            <span class="comment">% Calculamos las velocidades por los puntos</span>
+            <span class="keyword">for</span> k=1:N+1 <span class="comment">% N+1 puntos</span>
+                <span class="keyword">if</span>(k==1 || k==N+1) <span class="comment">% Si es el final o inicial lo igualamos a cero</span>
+                    dq(k) = 0;
+                <span class="keyword">else</span>
+                    <span class="keyword">if</span>(sign(q(j,k)-q(j,k-1))~=sign(q(j,k+1)-q(j,k)))
+                        dq(k) = 0; <span class="comment">% Velocidad en ese punto es cero</span>
+                        <span class="comment">% Si alguna recta es horizonal o si las pendientes son iguales de signo</span>
+                    <span class="keyword">elseif</span>( sign(q(j,k)-q(j,k-1))==sign(q(j,k+1)-q(j,k)) || q(j,k-1)==q(j,k) || q(j,k+1)==q(j,k) )
+                        <span class="comment">% Cojemos la media de las pendientes de las rectas adjacentes</span>
+                        dq(k) = (1/2)*((q(j,k+1)-q(j,k))/T+(q(j,k)-q(j,k-1))/T);
+                    <span class="keyword">end</span>
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+
+            qini  = q(j,i);
+            qfin  = q(j,i+1);
+
+            <span class="comment">% Condiciones de contorno de velocidades (Criterio heuristico)</span>
+            dqini = dq(i);
+            dqfin = dq(i+1);
+
+            <span class="comment">% Condiciones de contorno de aceleraciones</span>
+            ddqini = 0;
+            ddqfin = 0;
+
+            qSt = [qfin; dqfin; ddqfin; qini; dqini; ddqini];
+            Params = [Params TM\qSt];
+            <span class="comment">% La velocidad final del tramo i sera la velocidad inicial del tramo i+1</span>
+        <span class="keyword">end</span>
+        sParams(:,i,:) = Params;
+    <span class="keyword">end</span>
+
+    <span class="comment">% Vectores del polinomio interpolador con su primera y segunda derivada</span>
+
+    sEc   = @(t,ti) [1  (t-ti)   (t-ti)^2    (t-ti)^3     (t-ti)^4     (t-ti)^5];
+    dsEc  = @(t,ti) [0  1      2*(t-ti)    3*(t-ti)^2   4*(t-ti)^3   5*(t-ti)^4];
+    ddsEc = @(t,ti) [0  0      2           6*(t-ti)^1  12*(t-ti)^2  20*(t-ti)^3];
+
+    <span class="keyword">end</span>
+
+
+    <span class="keyword">if</span>(t&gt;sT &amp;&amp; t&lt;=sT+tT)
+        i = ceil((t-sT)/T);
+
+        <span class="comment">% Posiciones articulares q1 q2 q3</span>
+        trayectoria = [sEc(t,sT+T*(i-1))*sParams(:,i,1);
+                       sEc(t,sT+T*(i-1))*sParams(:,i,2);
+                       sEc(t,sT+T*(i-1))*sParams(:,i,3);
+
+        <span class="comment">% Velocidades articulares q1 q2 q3</span>
+                       dsEc(t,sT+T*(i-1))*sParams(:,i,1);
+                       dsEc(t,sT+T*(i-1))*sParams(:,i,2);
+                       dsEc(t,sT+T*(i-1))*sParams(:,i,3);
+
+        <span class="comment">% Aceleraciones articulares q1 q2 q3</span>
+                       ddsEc(t,sT+T*(i-1))*sParams(:,i,1);
+                       ddsEc(t,sT+T*(i-1))*sParams(:,i,2);
+                       ddsEc(t,sT+T*(i-1))*sParams(:,i,3)];
+
+    <span class="keyword">elseif</span>(t&gt;sT+tT)
+        trayectoria = [mci(fPos,c)' 0 0 0 0 0 0]';
+    <span class="keyword">else</span>
+        trayectoria = [mci(iPos,0)' 0 0 0 0 0 0]';
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><pre class="codeoutput error">Not enough input arguments.
+
+Error in genTrayectoria5 (line 3)
+    iPos = [in(1); in(2); in(3)];    % Start point
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function trayectoria = genTrayectoria5(in)
+    
+    iPos = [in(1); in(2); in(3)];    % Start point
+    fPos = [in(4); in(5); in(6)];    % Stop  point
+    N    = in(7);              % Number of points in-between trajectory
+    sT   = in(8);              % Start time
+    tT   = in(9);              % Trajectory time
+    t    = in(10);
+   
+    persistent T sParams sEc dsEc ddsEc c
+    
+    if(t<1e-8)
+    
+    T = tT/N;   % Ciclo de un tramo
+    
+    % Recta que pasa por los dos puntos
+    p = @(t) (fPos-iPos)*((t-sT)/tT) + iPos; % Line that pases through the two points
+
+    % Dividimos la trayectoria en partes iguales segun N
+    tP = sT:T:(sT+tT);  % We devide the time interval by the numeber N
+    pm = p(tP);         % We calculate the points for those times
+    
+    % Con el MCI calculamos las coordenadas articulares para cada uno de esos puntos
+    q = [];     % Creamos un espacio de memoria para las coordenadas articulares
+    fst = 1;    % Determina si se ha calculado ya las articulaciones para el primer punto
+    for i = 1:N+1 
+        % Modelo cinematico Inverso
+        if fst % Si es el primer punto claculamos los angulos en una configuracion
+            q = [q mci(pm(:,i)',0)];
+            fst = 0;
+        else % Si ya se calculo el primero, caluclamos las dos posiblidades
+            q1 = mci(pm(:,i)',0);
+            q2 = mci(pm(:,i)',1);
+            % Miramos cual es el minimo recorrido a las dos posiblidades y la
+            % asignamos
+            if(min(abs((q(3,i-1)-q1(3))),abs((q(3,i-1)-q2(3))))==abs((q(3,i-1)-q1(3))))
+                q = [q q1];
+                c = 0;
+            else
+                q = [q q2];
+                c = 1;
+            end
+        end
+        
+    end
+
+        
+    % Condiciones de contorno para el calculo de los parametros del polinomio de interpolacion
+    % Condiciones de contorno de posicion
+    
+    Params  = [];
+    sParams = zeros(6,N,3);
+    qSt     = [];
+
+    % Matriz con los coericientes de las ecuaciones del polinomio interpolador
+    % con sus derivadas primeras y segundas para un tiempo (t-ti) = T
+    TM = [1   T^1   T^2   T^3    T^4    T^5;
+          0 1*T^0 2*T^1 3*T^2  4*T^3  5*T^4;
+          0     0 2^T^0 6*T^1 12*T^2 20*T^3;
+          1     0     0     0      0      0;
+          0     1     0     0      0      0;
+          0     0     2     0      0      0];
+
+    dq = zeros(1,N+1);
+    for i=1:N % Para N tramos
+        Params = [];
+        for j=1:3  % Para las tres articulaciones
+            % Calculamos las velocidades por los puntos
+            for k=1:N+1 % N+1 puntos
+                if(k==1 || k==N+1) % Si es el final o inicial lo igualamos a cero
+                    dq(k) = 0;
+                else
+                    if(sign(q(j,k)-q(j,k-1))~=sign(q(j,k+1)-q(j,k)))
+                        dq(k) = 0; % Velocidad en ese punto es cero
+                        % Si alguna recta es horizonal o si las pendientes son iguales de signo
+                    elseif( sign(q(j,k)-q(j,k-1))==sign(q(j,k+1)-q(j,k)) || q(j,k-1)==q(j,k) || q(j,k+1)==q(j,k) )
+                        % Cojemos la media de las pendientes de las rectas adjacentes
+                        dq(k) = (1/2)*((q(j,k+1)-q(j,k))/T+(q(j,k)-q(j,k-1))/T);
+                    end
+                end
+            end
+            
+            qini  = q(j,i);
+            qfin  = q(j,i+1);
+            
+            % Condiciones de contorno de velocidades (Criterio heuristico)
+            dqini = dq(i);
+            dqfin = dq(i+1);
+
+            % Condiciones de contorno de aceleraciones 
+            ddqini = 0;
+            ddqfin = 0;
+
+            qSt = [qfin; dqfin; ddqfin; qini; dqini; ddqini];
+            Params = [Params TM\qSt];
+            % La velocidad final del tramo i sera la velocidad inicial del tramo i+1
+        end
+        sParams(:,i,:) = Params;
+    end
+
+    % Vectores del polinomio interpolador con su primera y segunda derivada
+
+    sEc   = @(t,ti) [1  (t-ti)   (t-ti)^2    (t-ti)^3     (t-ti)^4     (t-ti)^5];
+    dsEc  = @(t,ti) [0  1      2*(t-ti)    3*(t-ti)^2   4*(t-ti)^3   5*(t-ti)^4];
+    ddsEc = @(t,ti) [0  0      2           6*(t-ti)^1  12*(t-ti)^2  20*(t-ti)^3]; 
+    
+    end
+ 
+
+    if(t>sT && t<=sT+tT)
+        i = ceil((t-sT)/T);
+       
+        % Posiciones articulares q1 q2 q3
+        trayectoria = [sEc(t,sT+T*(i-1))*sParams(:,i,1);
+                       sEc(t,sT+T*(i-1))*sParams(:,i,2);
+                       sEc(t,sT+T*(i-1))*sParams(:,i,3);
+           
+        % Velocidades articulares q1 q2 q3
+                       dsEc(t,sT+T*(i-1))*sParams(:,i,1);
+                       dsEc(t,sT+T*(i-1))*sParams(:,i,2);
+                       dsEc(t,sT+T*(i-1))*sParams(:,i,3);
+            
+        % Aceleraciones articulares q1 q2 q3
+                       ddsEc(t,sT+T*(i-1))*sParams(:,i,1);
+                       ddsEc(t,sT+T*(i-1))*sParams(:,i,2);
+                       ddsEc(t,sT+T*(i-1))*sParams(:,i,3)];
+                   
+    elseif(t>sT+tT)
+        trayectoria = [mci(fPos,c)' 0 0 0 0 0 0]';
+    else
+        trayectoria = [mci(iPos,0)' 0 0 0 0 0 0]';
+    end
+end
+
+##### SOURCE END #####
+--></body></html>

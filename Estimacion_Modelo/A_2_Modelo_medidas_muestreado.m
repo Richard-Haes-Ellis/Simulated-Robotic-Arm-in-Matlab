@@ -105,7 +105,7 @@ hold on;
 title('error cometido de qdd');
 
 fprintf('Resutlado de filtrar y calcular datos.\n');
-pause();
+
 
 %%
 % Eliminamos el primer segundo de muestras y cojemos 1 de cada 10  
@@ -118,7 +118,7 @@ pause();
 
 for i=1:1:length(Ime)
     
-    fprintf('Evaluando gamma... %f%%',100*i/length(Ime));
+    %fprintf('Evaluando gamma... %f%%',100*i/length(Ime));
     
     q1 = qe(i,1);
     q2 = qe(i,2);
@@ -138,7 +138,7 @@ for i=1:1:length(Ime)
     Gamma_exp  = [Gamma_exp; eval(Gamma_reduced)];
     Im_R_K_exp = [Im_R_K_exp; K*R*Ime(i,:)'];
    
-    fprintf(repmat('\b',1,length(sprintf('Evaluando gamma... %f%%',100*i/length(Ime)))));
+    %fprintf(repmat('\b',1,length(sprintf('Evaluando gamma... %f%%',100*i/length(Ime)))));
 end
 fprintf('Done!\n');
 

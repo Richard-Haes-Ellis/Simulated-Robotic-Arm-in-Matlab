@@ -1,0 +1,1111 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>A_1_Obtencion_Modelo_Simbolico</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-01-07"><meta name="DC.source" content="A_1_Obtencion_Modelo_Simbolico.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">DESPEJE DE PARAMETROS %%</a></li><li><a href="#3">OBTENCION DE COLUMNAS INDEPENDIENTES DE GAMMA %%</a></li><li><a href="#4">SIMULACION %%</a></li></ul></div><pre class="codeinput">clear <span class="string">all</span>;
+clc;
+
+<span class="comment">%%Analisis dinamico</span>
+
+<span class="comment">% Ejemplo de la utilizaci&#65533;n del algoritmo de Newton Euler para la din&#65533;mica</span>
+<span class="comment">% de un robot de 3 DGL</span>
+<span class="comment">% M.G. Ortega (2017)</span>
+
+syms <span class="string">q1</span> <span class="string">qd1</span> <span class="string">qdd1</span> <span class="string">q2</span> <span class="string">qd2</span> <span class="string">qdd2</span> <span class="string">q3</span> <span class="string">qd3</span> <span class="string">qdd3</span> <span class="string">g</span> <span class="string">real</span>
+syms <span class="string">m1</span> <span class="string">m2</span> <span class="string">m3</span> <span class="string">Bm1</span> <span class="string">Bm2</span> <span class="string">Bm3</span> <span class="string">Jm1</span> <span class="string">Jm2</span> <span class="string">Jm3</span> <span class="string">Ixx1</span> <span class="string">Ixx2</span> <span class="string">Ixx3</span> <span class="string">Iyy1</span> <span class="string">Iyy2</span> <span class="string">Iyy3</span> <span class="string">Izz1</span> <span class="string">Izz2</span> <span class="string">Izz3</span> <span class="string">real</span>
+syms <span class="string">Im1</span> <span class="string">Im2</span> <span class="string">Im3</span> <span class="string">R1</span> <span class="string">R2</span> <span class="string">R3</span> <span class="string">l0</span> <span class="string">l1</span> <span class="string">l2</span> <span class="string">l3</span> <span class="string">Lc1</span> <span class="string">Lc2</span> <span class="string">Lc3</span> <span class="string">real</span>
+PI = sym(<span class="string">'pi'</span>);
+
+fprintf(<span class="string">'Obteniendo modelo...\n'</span>);
+
+<span class="comment">% DATOS CINEM&#65533;TICOS DEL BRAZO DEL ROBOT</span>
+
+<span class="comment">%   Dimensiones (m)</span>
+<span class="comment">%   L0=0.4;</span>
+<span class="comment">%   L1=0.5;  % Eslab&#65533;n 1</span>
+<span class="comment">%   L2=1;    % Eslab&#65533;n 2</span>
+<span class="comment">%   L3=0.5;  % Eslab&#65533;n 3</span>
+
+<span class="comment">% Par&#65533;metros de Denavit-Hartenberg (utilizado en primera regla de Newton-Euler)</span>
+<span class="comment">% Eslab&#65533;n base (no utilizado)</span>
+theta0=0  ; d0=l0 ;  a0=0  ; alpha0=0;
+<span class="comment">% Eslab&#65533;n 1: meto offset aqui L1=0.8, porque no puede ser mas del que tiene</span>
+theta1=q1 ; d1=l1 ;  a1=0  ; alpha1=PI/2 ;
+<span class="comment">% Eslab&#65533;n 2:</span>
+theta2=q2 ; d2=0  ;  a2=l2 ; alpha2=0 ;
+<span class="comment">% Eslab&#65533;n 3:n</span>
+theta3=q3 ; d3=0  ;  a3=l3 ; alpha3=0 ;
+<span class="comment">% Entre eslab&#65533;n 3 y marco donde se ejerce la fuerza (a definir seg&#65533;n</span>
+<span class="comment">% experimento)</span>
+theta4=0 ; d4=0; a4=0 ; alpha4=0 ;
+
+<span class="comment">% Eslab&#65533;n 1</span>
+<span class="comment">% m1=M1 ; % kg</span>
+s11 = [0,-Lc1,0]'; <span class="comment">% m</span>
+I11=[Ixx1,0,0;0,Iyy1,0;0,0,Izz1]; <span class="comment">% kg.m2</span>
+
+<span class="comment">% Eslab&#65533;n 2</span>
+<span class="comment">% m2=M2 ; % kg</span>
+s22 = [-Lc2,0,0]'; <span class="comment">% m</span>
+I22=[Ixx2,0,0;0,Iyy2,0;0,0,Izz2]; <span class="comment">% kg.m2</span>
+
+<span class="comment">% Eslab&#65533;n 3</span>
+<span class="comment">% m3=M3; % kg</span>
+s33 = [-Lc3,0,0]'; <span class="comment">% m</span>
+I33=[Ixx3,0,0;0,Iyy3,0 ;0,0,Izz3]; <span class="comment">% kg.m2</span>
+
+<span class="comment">% DATOS DE LOS MOTORES</span>
+<span class="comment">% Inercias</span>
+<span class="comment">%   Jm1=JM1;</span>
+<span class="comment">%   Jm2=JM2;</span>
+<span class="comment">%   Jm3=JM3; % kg.m2</span>
+<span class="comment">% Coeficientes de fricci&#65533;n viscosa</span>
+<span class="comment">%   Bm1=BM1;</span>
+<span class="comment">%   Bm2=BM2;</span>
+<span class="comment">%   Bm3=BM3; % N.m / (rad/s)</span>
+<span class="comment">% Factores de reducci&#65533;n</span>
+<span class="comment">%   R1=50;</span>
+<span class="comment">%   R2=30;</span>
+<span class="comment">%   R3=15;</span>
+
+<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="comment">% ALGOR&#65533;TMO DE NEWTON-EULER</span>
+<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="comment">% wij  : velocidad   angular absoluta de eje j expresada en i</span>
+<span class="comment">% wdij : Aceleraci&#65533;n angular absoluta de eje j expresada en i</span>
+<span class="comment">% vij  : Velocidad   lineal absoluta del origen del marco j expresada en i</span>
+<span class="comment">% vdij : Aceleraci&#65533;n lineal absoluta del origen del marco j expresada en i</span>
+<span class="comment">% aii  : aceleraci&#65533;n del centro de gravedad del eslab&#65533;n i, expresado en i?</span>
+
+<span class="comment">% fij : fuerza ejercida sobre la articulaci&#65533;n j-1 (uni&#65533;n barra j-1 con j),</span>
+<span class="comment">% expresada en i-1</span>
+<span class="comment">%</span>
+<span class="comment">% nij : par ejercido sobre la articulaci&#65533;n j-1 (uni&#65533;n barra j-1 con j),</span>
+<span class="comment">% expresada en i-1</span>
+
+<span class="comment">% pii : vector (libre) que une el origen de coordenadas de i-1 con el de i,</span>
+<span class="comment">% expresadas en i : [ai, di*sin(alphai), di*cos(alphai)] (a,d,aplha: par&#65533;metros de DH)</span>
+<span class="comment">%</span>
+<span class="comment">% sii : coordenadas del centro de masas del eslab&#65533;n i, expresada en el sistema</span>
+<span class="comment">% i</span>
+
+<span class="comment">% Iii : matriz de inercia del eslab&#65533;n i expresado en un sistema paralelo al</span>
+<span class="comment">% i y con el origen en el centro de masas del eslab&#65533;n</span>
+<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+
+<span class="comment">% N-E 1: Asignaci&#65533;n a cada eslab&#65533;n de sistema de referencia de acuerdo con las normas de D-H.</span>
+<span class="comment">% Eslab&#65533;n 1:</span>
+p11 = [a1, d1*sin(alpha1), d1*cos(alpha1)]';
+<span class="comment">% Eslab&#65533;n 2:</span>
+p22 = [a2, d2*sin(alpha2), d2*cos(alpha2)]';
+<span class="comment">% Eslab&#65533;n 3:</span>
+p33 = [a3, d3*sin(alpha3), d3*cos(alpha3)]';
+<span class="comment">% Entre eslab&#65533;n 2 y marco donde se ejerce la fuerza (supongo que el mismo</span>
+<span class="comment">% que el Z0</span>
+p44 = [a4, d4*sin(alpha4), d4*cos(alpha4)]';
+
+<span class="comment">% N-E 2: Condiciones iniciales de la base</span>
+w00  = [0 0 0]'; <span class="comment">% Velocidad angular nula</span>
+wd00 = [0 0 0]'; <span class="comment">% Aceleracion angular nula</span>
+v00  = [0 0 0]'; <span class="comment">% Velocidad lineal de la base nula</span>
+vd00 = [0 0 g]'; <span class="comment">% Aceleraci&#65533;n de la gravedad en el eje Z0 negativo</span>
+
+<span class="comment">% Condiciones iniciales para el extremo del robot(sirve para saber si tengo</span>
+<span class="comment">% algo en el efector final y ver como afectar&#65533;a)</span>
+f44= [0 0 0]';
+n44= [0 0 0]';
+
+<span class="comment">% Definici&#65533;n de vector local Z</span>
+Z=[0 0 1]';
+
+<span class="comment">% N-E 3: Obtenci&#65533;n de las matrices de rotaci&#65533;n (i)R(i-1) y de sus inversas</span>
+R01=[cos(theta1) -cos(alpha1)*sin(theta1) sin(alpha1)*sin(theta1);
+    sin(theta1)  cos(alpha1)*cos(theta1)  -sin(alpha1)*cos(theta1);
+    0            sin(alpha1)                cos(alpha1)           ];
+R10= R01';
+
+R12=[cos(theta2) -cos(alpha2)*sin(theta2) sin(alpha2)*sin(theta2);
+    sin(theta2)  cos(alpha2)*cos(theta2)  -sin(alpha2)*cos(theta2);
+    0            sin(alpha2)              cos(alpha2)           ];
+R21= R12';
+
+R23=[cos(theta3) -cos(alpha3)*sin(theta3) sin(alpha3)*sin(theta3);
+    sin(theta3)  cos(alpha3)*cos(theta3)  -sin(alpha3)*cos(theta3);
+    0            sin(alpha3)              cos(alpha3)           ];
+R32= R23';
+
+R34=[cos(theta4) -cos(alpha4)*sin(theta4) sin(alpha4)*sin(theta4);
+    sin(theta4)  cos(alpha4)*cos(theta4)  -sin(alpha4)*cos(theta4);
+    0            sin(alpha4)              cos(alpha4)           ];
+R43= R34';
+
+<span class="comment">%%%%%%% ITERACI&#65533;N HACIA EL EXTERIOR (CINEM&#65533;TICA)</span>
+
+<span class="comment">% N-E 4: Obtenci&#65533;n de las velocidades angulares absolutas</span>
+<span class="comment">% Articulaci&#65533;n 1</span>
+w11= R10*(w00+Z*qd1);  <span class="comment">% Si es de rotaci&#65533;n</span>
+<span class="comment">%w11 = R10*w00;      % Si es de translaci&#65533;n</span>
+<span class="comment">% Articulaci&#65533;n 2</span>
+w22= R21*(w11+Z*qd2);  <span class="comment">% Si es de rotaci&#65533;n</span>
+<span class="comment">%w22 = R21*w11;      % Si es de translaci&#65533;n</span>
+<span class="comment">% Articulaci&#65533;n 3</span>
+w33= R32*(w22+Z*qd3);  <span class="comment">% Si es de rotaci&#65533;n</span>
+<span class="comment">% w33 = R32*w22;      % Si es de translaci&#65533;n</span>
+
+<span class="comment">% N-E 5: Obtenci&#65533;n de las aceleraciones angulares absolutas</span>
+<span class="comment">% Articulaci&#65533;n 1</span>
+wd11 = R10*(wd00+Z*qdd1+cross(w00,Z*qd1));  <span class="comment">% si es de rotaci&#65533;n</span>
+<span class="comment">% wd11 = R10*wd00;                                % si es de translaci&#65533;n</span>
+<span class="comment">% Articulaci&#65533;n 2</span>
+wd22 = R21*(wd11+Z*qdd2+cross(w11,Z*qd2));  <span class="comment">% si es de rotaci&#65533;n</span>
+<span class="comment">%wd22 = R21*wd11;                                % si es de translaci&#65533;n</span>
+<span class="comment">% Articulaci&#65533;n 3</span>
+wd33 = R32*(wd22+Z*qdd3+cross(w22,Z*qd3));  <span class="comment">% si es de rotaci&#65533;n</span>
+<span class="comment">% wd33 = R32*wd22;                                % si es de translaci&#65533;n</span>
+
+<span class="comment">% N-E 6: Obtenci&#65533;n de las aceleraciones lineales de los or&#65533;genes de los</span>
+<span class="comment">% sistemas</span>
+<span class="comment">% Articulaci&#65533;n 1</span>
+vd11 = cross(wd11,p11)+cross(w11,cross(w11,p11))+R10*vd00;  <span class="comment">% si es de rotaci&#65533;n</span>
+<span class="comment">% vd11 = R10*(Z*qdd1+vd00)+cross(wd11,p11)+2*cross(w11,R10*Z*qd1) + cross(w11,cross(w11,p11));    % si es de translaci&#65533;n</span>
+<span class="comment">% Articulaci&#65533;n 2</span>
+vd22 = cross(wd22,p22)+cross(w22,cross(w22,p22))+R21*vd11;  <span class="comment">% si es de rotaci&#65533;n</span>
+<span class="comment">% vd22 = R21*(Z*qdd2+vd11)+cross(wd22,p22)+2*cross(w22,R21*Z*qd2) + cross(w22,cross(w22,p22));    % si es de translaci&#65533;n</span>
+<span class="comment">% Articulaci&#65533;n 3</span>
+vd33 = cross(wd33,p33)+cross(w33,cross(w33,p33))+R32*vd22;  <span class="comment">% si es de rotaci&#65533;n</span>
+<span class="comment">%vd33 = R32*(Z*qdd3+vd22)+cross(wd33,p33)+2*cross(w33,R32*Z*qd3) + cross(w33,cross(w33,p33));    % si es de translaci&#65533;n</span>
+
+<span class="comment">% N-E 7: Obtenci&#65533;n de las aceleraciones lineales de los centros de gravedad</span>
+a11 = cross(wd11,s11)+cross(w11,cross(w11,s11))+vd11;
+a22 = cross(wd22,s22)+cross(w22,cross(w22,s22))+vd22;
+a33 = cross(wd33,s33)+cross(w33,cross(w33,s33))+vd33;
+
+<span class="comment">%%%%%%% ITERACI&#65533;N HACIA EL INTERIOR (DIN&#65533;MICA)</span>
+
+<span class="comment">% N-E 8: Obtenci&#65533;n de las fuerzas ejercidas sobre los eslabones</span>
+f33=R34*f44+m3*a33;
+f22=R23*f33+m2*a22;
+f11=R12*f22+m1*a11;
+
+<span class="comment">% N-E 9: Obtenci&#65533;n de los pares ejercidas sobre los eslabones</span>
+n33 = R34*(n44+cross(R43*p33,f44))+cross(p33+s33,m3*a33)+I33*wd33+cross(w33,I33*w33);
+n22 = R23*(n33+cross(R32*p22,f33))+cross(p22+s22,m2*a22)+I22*wd22+cross(w22,I22*w22);
+n11 = R12*(n22+cross(R21*p11,f22))+cross(p11+s11,m1*a11)+I11*wd11+cross(w11,I11*w11);
+
+<span class="comment">% N-E 10: Obtener la fuerza o par aplicado sobre la articulaci&#65533;n</span>
+N3z = n33'*R32*Z;  <span class="comment">% Si es de rotaci&#65533;n</span>
+N3  = n33'*R32;    <span class="comment">% Para ver todos los pares, no solo el del eje Z</span>
+F3z = f33'*R32*Z;  <span class="comment">% Si es de translacion;</span>
+F3  = f33'*R32;    <span class="comment">% Para ver todas las fuerzas, no solo la del eje Z</span>
+N2z = n22'*R21*Z;  <span class="comment">% Si es de rotaci&#65533;n</span>
+N2  = n22'*R21;    <span class="comment">% Para ver todos los pares, no solo el del eje Z</span>
+F2z = f22'*R21*Z;  <span class="comment">% Si es de translacion;</span>
+F2  = f22'*R21;    <span class="comment">% Para ver todas las fuerzas, no solo la del eje Z</span>
+N1z = n11'*R10*Z;  <span class="comment">% Si es de rotaci&#65533;n</span>
+N1  = n11'*R10;    <span class="comment">% Para ver todos los pares, no solo el del eje Z</span>
+F1z = f11'*R10*Z;  <span class="comment">% Si es de translacion;</span>
+F1  = f11'*R10;    <span class="comment">% Para ver todas las fuerzas, no solo la del eje Z</span>
+
+<span class="comment">% Robot ??? (descomentar los que procedan) (en los de rotacion saldr&#65533; un par y en los de translaci&#65533;n una fuerza)</span>
+<span class="comment">%T1=F1z;</span>
+T1=N1z;
+<span class="comment">%T2=F2z;</span>
+T2=N2z;
+<span class="comment">%T3=F3z;</span>
+T3=N3z;
+
+<span class="comment">%Primera ecuaci&#65533;n</span>
+<span class="comment">%--------</span>
+<span class="comment">%Calculo de los terminos de la inercia(afines a qdd)</span>
+M11=diff(T1,qdd1);
+Taux=simplify(T1-M11*qdd1);
+M12=diff(Taux,qdd2);
+Taux=simplify(Taux-M12*qdd2);
+M13=diff(Taux,qdd3);
+Taux=simplify(Taux-M13*qdd3);
+<span class="comment">%Taux restante contiente Centripetos/Coriolis(V) y Gravitatorios(G)</span>
+<span class="comment">%T&#65533;rminos gravitarorios dependen linealmente de 'g'</span>
+G1   = diff(Taux,g)*g;
+Taux = simplify(Taux-G1);
+<span class="comment">%Taux contiene t&#65533;rminos Centripetos/Coriolis</span>
+V1   = Taux;
+
+<span class="comment">%Segunda ecuaci&#65533;n</span>
+M21  = diff(T2,qdd1);
+Taux = simplify(T2-M21*qdd1);
+M22  = diff(Taux,qdd2);
+Taux = simplify(Taux-M22*qdd2);
+M23  = diff(Taux,qdd3);
+Taux = simplify(Taux-M23*qdd3);
+<span class="comment">%Taux restante contiente Centripetos/Coriolis(V) y Gravitatorios(G)</span>
+<span class="comment">%T&#65533;rminos gravitarorios dependen linealmente de 'g'</span>
+G2=diff(Taux,g)*g;
+Taux=simplify(Taux-G2);
+<span class="comment">%Taux contiene t&#65533;rminos Centripetos/Coriolis</span>
+V2=Taux;
+
+<span class="comment">%Tercera ecuaci&#65533;n</span>
+M31=diff(T3,qdd1);
+Taux=simplify(T3-M31*qdd1);
+M32=diff(Taux,qdd2);
+Taux=simplify(Taux-M32*qdd2);
+M33=diff(Taux,qdd3);
+Taux=simplify(Taux-M33*qdd3);
+<span class="comment">%Taux restante contiente Centripetos/Coriolis(V) y Gravitatorios(G)</span>
+<span class="comment">%T&#65533;rminos gravitarorios dependen linealmente de 'g'</span>
+G3=diff(Taux,g)*g;
+Taux=simplify(Taux-G3);
+<span class="comment">%Taux contiene t&#65533;rminos Centripetos/Coriolis</span>
+V3=Taux;
+
+<span class="comment">%Simplificar expresiones</span>
+M11=simplify(M11);M12=simplify(M12);M13=simplify(M13);
+M21=simplify(M21);M22=simplify(M22);M23=simplify(M23);
+M31=simplify(M31);M32=simplify(M32);M31=simplify(M33);
+
+V1=simplify(V1);V2=simplify(V2);V3=simplify(V3);
+
+G1=simplify(G1);G2=simplify(G2);G3=simplify(G3);
+
+<span class="comment">%Aplicaci&#65533;n en matrices y vectores</span>
+M=[M11 M12 M13;M21 M22 M23;M31 M32 M33];
+V=[V1 V2 V3]';
+G=[G1 G2 G3]';
+
+<span class="comment">%Inclusi&#65533;n de los motores en la ecuaci&#65533;n de din&#65533;micos</span>
+R=diag([R1 R2 R3]);
+Jm=diag([Jm1 Jm2 Jm3]);
+Bm=diag([Bm1 Bm2 Bm3]);
+
+Ma=M+R*R*Jm;
+Va=V+R*R*Bm*([qd1;qd2;qd3]);
+Ga=G;
+
+clearvars <span class="string">-except</span> <span class="string">Ma</span> <span class="string">Va</span> <span class="string">Ga</span>
+fprintf(<span class="string">'Hecho.\n\n'</span>);
+</pre><pre class="codeoutput">Obteniendo modelo...
+Hecho.
+
+</pre><h2 id="2">DESPEJE DE PARAMETROS %%</h2><pre class="codeinput">fprintf(<span class="string">'Despejando parametros por diferenciacion...\n'</span>);
+
+syms <span class="string">q1</span> <span class="string">qd1</span> <span class="string">qdd1</span> <span class="string">q2</span> <span class="string">qd2</span> <span class="string">qdd2</span> <span class="string">q3</span> <span class="string">qd3</span> <span class="string">qdd3</span> <span class="string">g</span> <span class="string">real</span>
+syms <span class="string">m1</span> <span class="string">m2</span> <span class="string">m3</span> <span class="string">Bm1</span> <span class="string">Bm2</span> <span class="string">Bm3</span> <span class="string">Jm1</span> <span class="string">Jm2</span> <span class="string">Jm3</span> <span class="string">Ixx1</span> <span class="string">Ixx2</span> <span class="string">Ixx3</span> <span class="string">Iyy1</span> <span class="string">Iyy2</span> <span class="string">Iyy3</span> <span class="string">Izz1</span> <span class="string">Izz2</span> <span class="string">Izz3</span> <span class="string">real</span>
+syms <span class="string">Im1</span> <span class="string">Im2</span> <span class="string">Im3</span> <span class="string">R1</span> <span class="string">R2</span> <span class="string">R3</span> <span class="string">K1</span> <span class="string">K2</span> <span class="string">K3</span> <span class="string">l0</span> <span class="string">l1</span> <span class="string">l2</span> <span class="string">l3</span> <span class="string">Lc1</span> <span class="string">Lc2</span> <span class="string">Lc3</span> <span class="string">real</span>
+syms <span class="string">Gamma</span> <span class="string">real</span>
+
+R=diag([R1 R2 R3]);
+Kt=diag([K1 K2 K3]);
+
+Kt_R_Im = (Ma*([qdd1;qdd2;qdd3]) + Va + Ga);
+
+<span class="comment">% Nuestra base de par&#65533;metros (24 en total)</span>
+Theta = [m1*Lc1^2 m1*Lc1 m1 Jm1 Bm1 Ixx1 Iyy1 Izz1 <span class="keyword">...</span>
+         m2*Lc2^2 m2*Lc2 m2 Jm2 Bm2 Ixx2 Iyy2 Izz2 <span class="keyword">...</span>
+         m3*Lc3^2 m3*Lc3 m3 Jm3 Bm3 Ixx3 Iyy3 Izz3].';
+
+Kt_R_Im_aux = Kt_R_Im;
+
+<span class="comment">% Diferenciacion</span>
+<span class="comment">% Terminos compuestos</span>
+Gamma(1:3,1) = simplify(0.5*diff(simplify(diff(simplify(diff(Kt_R_Im_aux,m1)),Lc1)),Lc1));
+Kt_R_Im_aux  = simplify(Kt_R_Im_aux-Gamma(1:3,1)*m1*Lc1^2);
+Gamma(1:3,2) = simplify(diff(simplify(diff(Kt_R_Im_aux,Lc1)),m1));
+Kt_R_Im_aux  = simplify(Kt_R_Im_aux-Gamma(1:3,2)*m1*Lc1);
+<span class="comment">% Terminos simples</span>
+<span class="keyword">for</span> i=3:8
+    Gamma(1:3,i) = simplify(diff(Kt_R_Im_aux,Theta(i)));
+    Kt_R_Im_aux = simplify(Kt_R_Im_aux-Gamma(1:3,i)*Theta(i));
+<span class="keyword">end</span>
+
+<span class="comment">% Terminos compuestos</span>
+Gamma(1:3,9)  = simplify(0.5*diff(simplify(diff(simplify(diff(Kt_R_Im_aux,m2)),Lc2)),Lc2));
+Kt_R_Im_aux   = simplify(Kt_R_Im_aux-Gamma(1:3,9)*m2*Lc2^2);
+Gamma(1:3,10) = simplify(diff(simplify(diff(Kt_R_Im_aux,Lc2)),m2));
+Kt_R_Im_aux   = simplify(Kt_R_Im_aux-Gamma(1:3,10)*m2*Lc2);
+<span class="comment">% Terminos simples</span>
+<span class="keyword">for</span> i=11:16
+    Gamma(1:3,i) = simplify(diff(Kt_R_Im_aux,Theta(i)));
+    Kt_R_Im_aux = simplify(Kt_R_Im_aux-Gamma(1:3,i)*Theta(i));
+<span class="keyword">end</span>
+
+<span class="comment">% Terminos compuestos</span>
+Gamma(1:3,17) = simplify(0.5*diff(simplify(diff(simplify(diff(Kt_R_Im_aux,m3)),Lc3)),Lc3));
+Kt_R_Im_aux   = simplify(Kt_R_Im_aux-Gamma(1:3,17)*m3*Lc3^2);
+Gamma(1:3,18) = simplify(diff(simplify(diff(Kt_R_Im_aux,Lc3)),m3));
+Kt_R_Im_aux   = simplify(Kt_R_Im_aux-Gamma(1:3,18)*m3*Lc3);
+<span class="comment">% Terminos simples</span>
+<span class="keyword">for</span> i=19:24
+    Gamma(1:3,i) = simplify(diff(Kt_R_Im_aux,Theta(i)));
+    Kt_R_Im_aux = simplify(Kt_R_Im_aux-Gamma(1:3,i)*Theta(i));
+<span class="keyword">end</span>
+fprintf(<span class="string">'Hecho.\n\n'</span>);
+
+<span class="comment">% Si el resultado de la resta es igual a 0, se ha relizado correctamente</span>
+fprintf(<span class="string">'Comprobando diferenciacion...\n'</span>);
+Res = simplify(Kt_R_Im-(Gamma*Theta));
+fprintf(<span class="string">'   %s\n'</span>,char(Res));
+
+<span class="keyword">if</span>(Res == [0 0 0]')
+    fprintf(<span class="string">'Diferenciacion correcta.\n\n'</span>);
+<span class="keyword">else</span>
+    fprintf(<span class="string">'Algo ha fallado. Info depuracion:\n\n'</span>);
+    Gamma
+    Theta
+    Kt_R_Im
+    <span class="keyword">return</span>;
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">Despejando parametros por diferenciacion...
+Hecho.
+
+Comprobando diferenciacion...
+   matrix([[0], [0], [0]])
+Diferenciacion correcta.
+
+</pre><h2 id="3">OBTENCION DE COLUMNAS INDEPENDIENTES DE GAMMA %%</h2><pre class="codeinput">l0 = 0.4; <span class="comment">% Eslab&#65533;n 0</span>
+l1 = 2;   <span class="comment">% Eslab&#65533;n 1</span>
+l2 = 3;   <span class="comment">% Eslab&#65533;n 2</span>
+l3 = 4;   <span class="comment">% Eslab&#65533;n 3</span>
+
+R1 = 50;  <span class="comment">% Reductora 1</span>
+R2 = 30;  <span class="comment">% Reductora 2</span>
+R3 = 15;  <span class="comment">% Reductora 3</span>
+
+K1 = 0.5;
+K2 = 0.4;
+K3 = 0.35;
+
+R = diag([R1 R2 R3]);
+K = diag([K1 K2 K3]);
+
+g = 9.81;
+
+<span class="keyword">for</span> i=1:3:24
+    qdd1 = rand; qd1 = rand; q1 = rand;
+    qdd2 = rand; qd2 = rand; q2 = rand;
+    qdd3 = rand; qd3 = rand; q3 = rand;
+    Gamma_num(i:i+2,:) = eval(Gamma);
+<span class="keyword">end</span>
+
+fprintf(<span class="string">'Calculando columnas independientes de gamma y reduciendo...\n'</span>);
+
+[A,jb] = rref(Gamma_num);
+
+aux = round(A,7)*Theta;
+
+fprintf(<span class="string">'Theta reducido numerico:\n'</span>);
+
+<span class="comment">% Solo guardamos los parametros de las columnas independientes</span>
+Theta_reduced = aux(find(aux));
+<span class="keyword">for</span> i = 1:length(Theta_reduced)
+    fprintf(<span class="string">'       %s\n'</span>, char(Theta_reduced(i)))
+<span class="keyword">end</span>
+fprintf(<span class="string">'\n'</span>);
+
+<span class="comment">% Guardamos solo las columnas independientes de gamma</span>
+Gamma_reduced = Gamma(1:3,jb);
+
+clear <span class="string">l1</span> <span class="string">l2</span> <span class="string">l3</span> <span class="string">R1</span> <span class="string">R2</span> <span class="string">R3</span>;
+syms <span class="string">Theta_reduced</span> <span class="string">l1</span> <span class="string">l2</span> <span class="string">l3</span> <span class="string">R1</span> <span class="string">R2</span> <span class="string">R3</span> <span class="string">real</span>;
+
+
+fprintf(<span class="string">'En simbolico theta resulta ser:\n'</span>);
+Theta_reduced = [(1/R1^2)*Ixx2 + (1/R1^2)*Iyy1 + (1/R1^2)*Iyy3 - (1/R1^2)*Izz3 + Jm1;
+    Bm1;
+    m2*Lc2^2 - Ixx2 + Iyy2 - l2^2*m2 - l2^2*m3;
+    Lc2*m2 - l2*m3 - l2*m2;
+    (1/R2^2)*Ixx2 - (1/R2^2)*Iyy2 + (1/R2^2)*Izz2 + Jm2;
+    Bm2;
+    m3*Lc3^2 + Izz3 - (l3^2)*m3;
+    Lc3*m3 - l3*m3;
+    Jm3;
+    Bm3;
+    Ixx3 - Iyy3 + Izz3];
+<span class="keyword">for</span> i = 1:length(Theta_reduced)
+    fprintf(<span class="string">'       %s\n'</span>, char(Theta_reduced(i)))
+<span class="keyword">end</span>
+fprintf(<span class="string">'\n'</span>);
+fprintf(<span class="string">'Comprobando los resultados...\n'</span>);
+<span class="comment">% Si el resultado de la resta es igual a 0, se ha relizad correctamente</span>
+Res = simplify(Kt_R_Im-(Gamma_reduced*Theta_reduced));
+fprintf(<span class="string">'   %s\n'</span>,char(Res));
+
+<span class="keyword">if</span>(Res == [0 0 0]')
+    fprintf(<span class="string">'Diferenciacion correcta\n\n\n'</span>);
+<span class="keyword">else</span>
+    fprintf(<span class="string">'Algo ha fallado. Info depuracion:\n'</span>);
+    Gamma_reduced
+    Theta_reduced
+    Kt_R_Im
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">Calculando columnas independientes de gamma y reduciendo...
+Theta reducido numerico:
+       Ixx2/2500 + Iyy1/2500 + Iyy3/2500 - Izz3/2500 + Jm1
+       Bm1
+       Iyy2 - Ixx2 - 9*m2 - 9*m3 + Lc2^2*m2
+       Lc2*m2 - 3*m3 - 3*m2
+       (5124044335074671*Ixx2)/4611686018427387904 - (5124044335074671*Iyy2)/4611686018427387904 + (5124044335074671*Izz2)/4611686018427387904 + Jm2
+       Bm2
+       Izz3 - 16*m3 + Lc3^2*m3
+       Lc3*m3 - 4*m3
+       Jm3
+       Bm3
+       Ixx3 - Iyy3 + Izz3
+
+En simbolico theta resulta ser:
+       Jm1 + Ixx2/R1^2 + Iyy1/R1^2 + Iyy3/R1^2 - Izz3/R1^2
+       Bm1
+       Iyy2 - Ixx2 + Lc2^2*m2 - l2^2*m2 - l2^2*m3
+       Lc2*m2 - l2*m2 - l2*m3
+       Jm2 + Ixx2/R2^2 - Iyy2/R2^2 + Izz2/R2^2
+       Bm2
+       Izz3 + Lc3^2*m3 - l3^2*m3
+       Lc3*m3 - l3*m3
+       Jm3
+       Bm3
+       Ixx3 - Iyy3 + Izz3
+
+Comprobando los resultados...
+   matrix([[0], [0], [0]])
+Diferenciacion correcta
+
+
+</pre><h2 id="4">SIMULACION %%</h2><pre class="codeinput"><span class="comment">% Periodo de muestreo</span>
+Ts = 0.001;
+
+<span class="comment">% Tiempo inicial y final de simulacion</span>
+ini = 1;
+fin = 50;
+
+<span class="comment">% Reductoras</span>
+R1=50;R2=30;R3=15;
+
+<span class="comment">% Entradas de cosenos con frecuancioas difernetes y ponderadas por una</span>
+<span class="comment">% exponencial</span>
+Im1_cc = 0; Im2_cc = 3.7; Im3_cc = 1;
+
+Tau1 = 8;Tau2 = 15;Tau3 = 20;
+
+Aa1 = 1;            wa1 = 1.3;  Ab1 = 0.5;       wb1 = wa1*5;
+Aa2 = Im2_cc*0.7;  wa2 = 3;    Ab2 = Aa2*0.8; wb2 = wa2*3.5;
+Aa3 = Im3_cc*0.6;  wa3 = 5;    Ab3 = Aa3*0.62;  wb3 = wa3*2.2;
+
+<span class="comment">% Condiciones iniciales del manipulador</span>
+q2ini=-0.80020550259323;
+q3ini=0.202600802956157;
+
+<span class="comment">% Porcentaje de ruido en la se&#65533;al del tacomentro</span>
+noise = 0.01;
+
+fprintf(<span class="string">'Empezando simulacion..\n'</span>);
+sim(<span class="string">'analisisDinamico.slx'</span>);
+fprintf(<span class="string">'Fin de simulacion.\n'</span>);
+</pre><pre class="codeoutput">Empezando simulacion..
+Fin de simulacion.
+</pre><pre class="codeinput"><span class="comment">% Representamos las corrientes y las salidas del modelo real y modelado</span>
+figure(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1])
+subplot1 = subplot(3,2,1);
+plot1 = plot(tout,Im(:,1));
+set(plot1(1),<span class="string">'DisplayName'</span>,<span class="string">'Corriente I_1'</span>);
+legend(subplot1,<span class="string">'show'</span>);
+grid;
+subplot1 = subplot(3,2,3);
+plot1 = plot(tout,Im(:,2));
+set(plot1(1),<span class="string">'DisplayName'</span>,<span class="string">'Corriente I_2'</span>);
+legend(subplot1,<span class="string">'show'</span>);
+grid;
+subplot1 = subplot(3,2,5);
+plot1 = plot(tout,Im(:,3));
+set(plot1(1),<span class="string">'DisplayName'</span>,<span class="string">'Corriente I_3'</span>);
+legend(subplot1,<span class="string">'show'</span>);
+grid;
+
+subplot1 = subplot(3,2,2);
+plot1 = plot(tout,q(:,1));
+set(plot1(1),<span class="string">'DisplayName'</span>,<span class="string">'Posicion Angular 1'</span>);
+legend(subplot1,<span class="string">'show'</span>);
+grid;
+subplot1 = subplot(3,2,4);
+plot1 = plot(tout,q(:,2));
+set(plot1(1),<span class="string">'DisplayName'</span>,<span class="string">'Posicion Angular 2'</span>);
+legend(subplot1,<span class="string">'show'</span>);
+grid;
+subplot1 = subplot(3,2,6);
+plot1 = plot(tout,q(:,3));
+set(plot1(1),<span class="string">'DisplayName'</span>,<span class="string">'Posicion Angular 3'</span>);
+legend(subplot1,<span class="string">'show'</span>);
+grid;
+
+save(<span class="string">'modeloSimbolico.mat'</span>);
+</pre><img vspace="5" hspace="5" src="A_1_Obtencion_Modelo_Simbolico_01.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+
+clear all;
+clc;
+
+%%Analisis dinamico
+
+% Ejemplo de la utilizaci�n del algoritmo de Newton Euler para la din�mica
+% de un robot de 3 DGL
+% M.G. Ortega (2017)
+
+syms q1 qd1 qdd1 q2 qd2 qdd2 q3 qd3 qdd3 g real
+syms m1 m2 m3 Bm1 Bm2 Bm3 Jm1 Jm2 Jm3 Ixx1 Ixx2 Ixx3 Iyy1 Iyy2 Iyy3 Izz1 Izz2 Izz3 real
+syms Im1 Im2 Im3 R1 R2 R3 l0 l1 l2 l3 Lc1 Lc2 Lc3 real
+PI = sym('pi');
+
+fprintf('Obteniendo modelo...\n');
+
+% DATOS CINEM�TICOS DEL BRAZO DEL ROBOT
+
+%   Dimensiones (m)
+%   L0=0.4;
+%   L1=0.5;  % Eslab�n 1
+%   L2=1;    % Eslab�n 2
+%   L3=0.5;  % Eslab�n 3
+
+% Par�metros de Denavit-Hartenberg (utilizado en primera regla de Newton-Euler)
+% Eslab�n base (no utilizado)
+theta0=0  ; d0=l0 ;  a0=0  ; alpha0=0;
+% Eslab�n 1: meto offset aqui L1=0.8, porque no puede ser mas del que tiene
+theta1=q1 ; d1=l1 ;  a1=0  ; alpha1=PI/2 ;
+% Eslab�n 2:
+theta2=q2 ; d2=0  ;  a2=l2 ; alpha2=0 ;
+% Eslab�n 3:n
+theta3=q3 ; d3=0  ;  a3=l3 ; alpha3=0 ;
+% Entre eslab�n 3 y marco donde se ejerce la fuerza (a definir seg�n
+% experimento)
+theta4=0 ; d4=0; a4=0 ; alpha4=0 ;
+
+% Eslab�n 1
+% m1=M1 ; % kg
+s11 = [0,-Lc1,0]'; % m
+I11=[Ixx1,0,0;0,Iyy1,0;0,0,Izz1]; % kg.m2
+
+% Eslab�n 2
+% m2=M2 ; % kg
+s22 = [-Lc2,0,0]'; % m
+I22=[Ixx2,0,0;0,Iyy2,0;0,0,Izz2]; % kg.m2
+
+% Eslab�n 3
+% m3=M3; % kg
+s33 = [-Lc3,0,0]'; % m
+I33=[Ixx3,0,0;0,Iyy3,0 ;0,0,Izz3]; % kg.m2
+
+% DATOS DE LOS MOTORES
+% Inercias
+%   Jm1=JM1;
+%   Jm2=JM2;
+%   Jm3=JM3; % kg.m2
+% Coeficientes de fricci�n viscosa
+%   Bm1=BM1;
+%   Bm2=BM2;
+%   Bm3=BM3; % N.m / (rad/s)
+% Factores de reducci�n
+%   R1=50;
+%   R2=30;
+%   R3=15;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ALGOR�TMO DE NEWTON-EULER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% wij  : velocidad   angular absoluta de eje j expresada en i
+% wdij : Aceleraci�n angular absoluta de eje j expresada en i
+% vij  : Velocidad   lineal absoluta del origen del marco j expresada en i
+% vdij : Aceleraci�n lineal absoluta del origen del marco j expresada en i
+% aii  : aceleraci�n del centro de gravedad del eslab�n i, expresado en i?
+
+% fij : fuerza ejercida sobre la articulaci�n j-1 (uni�n barra j-1 con j),
+% expresada en i-1
+%
+% nij : par ejercido sobre la articulaci�n j-1 (uni�n barra j-1 con j),
+% expresada en i-1
+
+% pii : vector (libre) que une el origen de coordenadas de i-1 con el de i,
+% expresadas en i : [ai, di*sin(alphai), di*cos(alphai)] (a,d,aplha: par�metros de DH)
+%
+% sii : coordenadas del centro de masas del eslab�n i, expresada en el sistema
+% i
+
+% Iii : matriz de inercia del eslab�n i expresado en un sistema paralelo al
+% i y con el origen en el centro de masas del eslab�n
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% N-E 1: Asignaci�n a cada eslab�n de sistema de referencia de acuerdo con las normas de D-H.
+% Eslab�n 1:
+p11 = [a1, d1*sin(alpha1), d1*cos(alpha1)]';
+% Eslab�n 2:
+p22 = [a2, d2*sin(alpha2), d2*cos(alpha2)]';
+% Eslab�n 3:
+p33 = [a3, d3*sin(alpha3), d3*cos(alpha3)]';
+% Entre eslab�n 2 y marco donde se ejerce la fuerza (supongo que el mismo
+% que el Z0
+p44 = [a4, d4*sin(alpha4), d4*cos(alpha4)]';
+
+% N-E 2: Condiciones iniciales de la base
+w00  = [0 0 0]'; % Velocidad angular nula
+wd00 = [0 0 0]'; % Aceleracion angular nula
+v00  = [0 0 0]'; % Velocidad lineal de la base nula
+vd00 = [0 0 g]'; % Aceleraci�n de la gravedad en el eje Z0 negativo
+
+% Condiciones iniciales para el extremo del robot(sirve para saber si tengo
+% algo en el efector final y ver como afectar�a)
+f44= [0 0 0]';
+n44= [0 0 0]';
+
+% Definici�n de vector local Z
+Z=[0 0 1]';
+
+% N-E 3: Obtenci�n de las matrices de rotaci�n (i)R(i-1) y de sus inversas
+R01=[cos(theta1) -cos(alpha1)*sin(theta1) sin(alpha1)*sin(theta1);
+    sin(theta1)  cos(alpha1)*cos(theta1)  -sin(alpha1)*cos(theta1);
+    0            sin(alpha1)                cos(alpha1)           ];
+R10= R01';
+
+R12=[cos(theta2) -cos(alpha2)*sin(theta2) sin(alpha2)*sin(theta2);
+    sin(theta2)  cos(alpha2)*cos(theta2)  -sin(alpha2)*cos(theta2);
+    0            sin(alpha2)              cos(alpha2)           ];
+R21= R12';
+
+R23=[cos(theta3) -cos(alpha3)*sin(theta3) sin(alpha3)*sin(theta3);
+    sin(theta3)  cos(alpha3)*cos(theta3)  -sin(alpha3)*cos(theta3);
+    0            sin(alpha3)              cos(alpha3)           ];
+R32= R23';
+
+R34=[cos(theta4) -cos(alpha4)*sin(theta4) sin(alpha4)*sin(theta4);
+    sin(theta4)  cos(alpha4)*cos(theta4)  -sin(alpha4)*cos(theta4);
+    0            sin(alpha4)              cos(alpha4)           ];
+R43= R34';
+
+%%%%%%% ITERACI�N HACIA EL EXTERIOR (CINEM�TICA)
+
+% N-E 4: Obtenci�n de las velocidades angulares absolutas
+% Articulaci�n 1
+w11= R10*(w00+Z*qd1);  % Si es de rotaci�n
+%w11 = R10*w00;      % Si es de translaci�n
+% Articulaci�n 2
+w22= R21*(w11+Z*qd2);  % Si es de rotaci�n
+%w22 = R21*w11;      % Si es de translaci�n
+% Articulaci�n 3
+w33= R32*(w22+Z*qd3);  % Si es de rotaci�n
+% w33 = R32*w22;      % Si es de translaci�n
+
+% N-E 5: Obtenci�n de las aceleraciones angulares absolutas
+% Articulaci�n 1
+wd11 = R10*(wd00+Z*qdd1+cross(w00,Z*qd1));  % si es de rotaci�n
+% wd11 = R10*wd00;                                % si es de translaci�n
+% Articulaci�n 2
+wd22 = R21*(wd11+Z*qdd2+cross(w11,Z*qd2));  % si es de rotaci�n
+%wd22 = R21*wd11;                                % si es de translaci�n
+% Articulaci�n 3
+wd33 = R32*(wd22+Z*qdd3+cross(w22,Z*qd3));  % si es de rotaci�n
+% wd33 = R32*wd22;                                % si es de translaci�n
+
+% N-E 6: Obtenci�n de las aceleraciones lineales de los or�genes de los
+% sistemas
+% Articulaci�n 1
+vd11 = cross(wd11,p11)+cross(w11,cross(w11,p11))+R10*vd00;  % si es de rotaci�n
+% vd11 = R10*(Z*qdd1+vd00)+cross(wd11,p11)+2*cross(w11,R10*Z*qd1) + cross(w11,cross(w11,p11));    % si es de translaci�n
+% Articulaci�n 2
+vd22 = cross(wd22,p22)+cross(w22,cross(w22,p22))+R21*vd11;  % si es de rotaci�n
+% vd22 = R21*(Z*qdd2+vd11)+cross(wd22,p22)+2*cross(w22,R21*Z*qd2) + cross(w22,cross(w22,p22));    % si es de translaci�n
+% Articulaci�n 3
+vd33 = cross(wd33,p33)+cross(w33,cross(w33,p33))+R32*vd22;  % si es de rotaci�n
+%vd33 = R32*(Z*qdd3+vd22)+cross(wd33,p33)+2*cross(w33,R32*Z*qd3) + cross(w33,cross(w33,p33));    % si es de translaci�n
+
+% N-E 7: Obtenci�n de las aceleraciones lineales de los centros de gravedad
+a11 = cross(wd11,s11)+cross(w11,cross(w11,s11))+vd11;
+a22 = cross(wd22,s22)+cross(w22,cross(w22,s22))+vd22;
+a33 = cross(wd33,s33)+cross(w33,cross(w33,s33))+vd33;
+
+%%%%%%% ITERACI�N HACIA EL INTERIOR (DIN�MICA)
+
+% N-E 8: Obtenci�n de las fuerzas ejercidas sobre los eslabones
+f33=R34*f44+m3*a33;
+f22=R23*f33+m2*a22;
+f11=R12*f22+m1*a11;
+
+% N-E 9: Obtenci�n de los pares ejercidas sobre los eslabones
+n33 = R34*(n44+cross(R43*p33,f44))+cross(p33+s33,m3*a33)+I33*wd33+cross(w33,I33*w33);
+n22 = R23*(n33+cross(R32*p22,f33))+cross(p22+s22,m2*a22)+I22*wd22+cross(w22,I22*w22);
+n11 = R12*(n22+cross(R21*p11,f22))+cross(p11+s11,m1*a11)+I11*wd11+cross(w11,I11*w11);
+
+% N-E 10: Obtener la fuerza o par aplicado sobre la articulaci�n
+N3z = n33'*R32*Z;  % Si es de rotaci�n
+N3  = n33'*R32;    % Para ver todos los pares, no solo el del eje Z
+F3z = f33'*R32*Z;  % Si es de translacion;
+F3  = f33'*R32;    % Para ver todas las fuerzas, no solo la del eje Z
+N2z = n22'*R21*Z;  % Si es de rotaci�n
+N2  = n22'*R21;    % Para ver todos los pares, no solo el del eje Z
+F2z = f22'*R21*Z;  % Si es de translacion;
+F2  = f22'*R21;    % Para ver todas las fuerzas, no solo la del eje Z
+N1z = n11'*R10*Z;  % Si es de rotaci�n
+N1  = n11'*R10;    % Para ver todos los pares, no solo el del eje Z
+F1z = f11'*R10*Z;  % Si es de translacion;
+F1  = f11'*R10;    % Para ver todas las fuerzas, no solo la del eje Z
+
+% Robot ??? (descomentar los que procedan) (en los de rotacion saldr� un par y en los de translaci�n una fuerza)
+%T1=F1z;
+T1=N1z;
+%T2=F2z;
+T2=N2z;
+%T3=F3z;
+T3=N3z;
+
+%Primera ecuaci�n
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+%Calculo de los terminos de la inercia(afines a qdd)
+M11=diff(T1,qdd1);
+Taux=simplify(T1-M11*qdd1);
+M12=diff(Taux,qdd2);
+Taux=simplify(Taux-M12*qdd2);
+M13=diff(Taux,qdd3);
+Taux=simplify(Taux-M13*qdd3);
+%Taux restante contiente Centripetos/Coriolis(V) y Gravitatorios(G)
+%T�rminos gravitarorios dependen linealmente de 'g'
+G1   = diff(Taux,g)*g;
+Taux = simplify(Taux-G1);
+%Taux contiene t�rminos Centripetos/Coriolis
+V1   = Taux;
+
+%Segunda ecuaci�n
+M21  = diff(T2,qdd1);
+Taux = simplify(T2-M21*qdd1);
+M22  = diff(Taux,qdd2);
+Taux = simplify(Taux-M22*qdd2);
+M23  = diff(Taux,qdd3);
+Taux = simplify(Taux-M23*qdd3);
+%Taux restante contiente Centripetos/Coriolis(V) y Gravitatorios(G)
+%T�rminos gravitarorios dependen linealmente de 'g'
+G2=diff(Taux,g)*g;
+Taux=simplify(Taux-G2);
+%Taux contiene t�rminos Centripetos/Coriolis
+V2=Taux;
+
+%Tercera ecuaci�n
+M31=diff(T3,qdd1);
+Taux=simplify(T3-M31*qdd1);
+M32=diff(Taux,qdd2);
+Taux=simplify(Taux-M32*qdd2);
+M33=diff(Taux,qdd3);
+Taux=simplify(Taux-M33*qdd3);
+%Taux restante contiente Centripetos/Coriolis(V) y Gravitatorios(G)
+%T�rminos gravitarorios dependen linealmente de 'g'
+G3=diff(Taux,g)*g;
+Taux=simplify(Taux-G3);
+%Taux contiene t�rminos Centripetos/Coriolis
+V3=Taux;
+
+%Simplificar expresiones
+M11=simplify(M11);M12=simplify(M12);M13=simplify(M13);
+M21=simplify(M21);M22=simplify(M22);M23=simplify(M23);
+M31=simplify(M31);M32=simplify(M32);M31=simplify(M33);
+
+V1=simplify(V1);V2=simplify(V2);V3=simplify(V3);
+
+G1=simplify(G1);G2=simplify(G2);G3=simplify(G3);
+
+%Aplicaci�n en matrices y vectores
+M=[M11 M12 M13;M21 M22 M23;M31 M32 M33];
+V=[V1 V2 V3]';
+G=[G1 G2 G3]';
+
+%Inclusi�n de los motores en la ecuaci�n de din�micos
+R=diag([R1 R2 R3]);
+Jm=diag([Jm1 Jm2 Jm3]);
+Bm=diag([Bm1 Bm2 Bm3]);
+
+Ma=M+R*R*Jm;
+Va=V+R*R*Bm*([qd1;qd2;qd3]);
+Ga=G;
+
+clearvars -except Ma Va Ga
+fprintf('Hecho.\n\n');
+
+%% DESPEJE DE PARAMETROS %%
+
+fprintf('Despejando parametros por diferenciacion...\n');
+
+syms q1 qd1 qdd1 q2 qd2 qdd2 q3 qd3 qdd3 g real
+syms m1 m2 m3 Bm1 Bm2 Bm3 Jm1 Jm2 Jm3 Ixx1 Ixx2 Ixx3 Iyy1 Iyy2 Iyy3 Izz1 Izz2 Izz3 real
+syms Im1 Im2 Im3 R1 R2 R3 K1 K2 K3 l0 l1 l2 l3 Lc1 Lc2 Lc3 real
+syms Gamma real
+
+R=diag([R1 R2 R3]);
+Kt=diag([K1 K2 K3]);
+
+Kt_R_Im = (Ma*([qdd1;qdd2;qdd3]) + Va + Ga);
+
+% Nuestra base de par�metros (24 en total)
+Theta = [m1*Lc1^2 m1*Lc1 m1 Jm1 Bm1 Ixx1 Iyy1 Izz1 ...
+         m2*Lc2^2 m2*Lc2 m2 Jm2 Bm2 Ixx2 Iyy2 Izz2 ...
+         m3*Lc3^2 m3*Lc3 m3 Jm3 Bm3 Ixx3 Iyy3 Izz3].';
+
+Kt_R_Im_aux = Kt_R_Im;
+
+% Diferenciacion
+% Terminos compuestos
+Gamma(1:3,1) = simplify(0.5*diff(simplify(diff(simplify(diff(Kt_R_Im_aux,m1)),Lc1)),Lc1));
+Kt_R_Im_aux  = simplify(Kt_R_Im_aux-Gamma(1:3,1)*m1*Lc1^2);
+Gamma(1:3,2) = simplify(diff(simplify(diff(Kt_R_Im_aux,Lc1)),m1));
+Kt_R_Im_aux  = simplify(Kt_R_Im_aux-Gamma(1:3,2)*m1*Lc1);
+% Terminos simples
+for i=3:8
+    Gamma(1:3,i) = simplify(diff(Kt_R_Im_aux,Theta(i)));
+    Kt_R_Im_aux = simplify(Kt_R_Im_aux-Gamma(1:3,i)*Theta(i));
+end
+
+% Terminos compuestos
+Gamma(1:3,9)  = simplify(0.5*diff(simplify(diff(simplify(diff(Kt_R_Im_aux,m2)),Lc2)),Lc2));
+Kt_R_Im_aux   = simplify(Kt_R_Im_aux-Gamma(1:3,9)*m2*Lc2^2);
+Gamma(1:3,10) = simplify(diff(simplify(diff(Kt_R_Im_aux,Lc2)),m2));
+Kt_R_Im_aux   = simplify(Kt_R_Im_aux-Gamma(1:3,10)*m2*Lc2);
+% Terminos simples
+for i=11:16
+    Gamma(1:3,i) = simplify(diff(Kt_R_Im_aux,Theta(i)));
+    Kt_R_Im_aux = simplify(Kt_R_Im_aux-Gamma(1:3,i)*Theta(i));
+end
+
+% Terminos compuestos
+Gamma(1:3,17) = simplify(0.5*diff(simplify(diff(simplify(diff(Kt_R_Im_aux,m3)),Lc3)),Lc3));
+Kt_R_Im_aux   = simplify(Kt_R_Im_aux-Gamma(1:3,17)*m3*Lc3^2);
+Gamma(1:3,18) = simplify(diff(simplify(diff(Kt_R_Im_aux,Lc3)),m3));
+Kt_R_Im_aux   = simplify(Kt_R_Im_aux-Gamma(1:3,18)*m3*Lc3);
+% Terminos simples
+for i=19:24
+    Gamma(1:3,i) = simplify(diff(Kt_R_Im_aux,Theta(i)));
+    Kt_R_Im_aux = simplify(Kt_R_Im_aux-Gamma(1:3,i)*Theta(i));
+end
+fprintf('Hecho.\n\n');
+
+% Si el resultado de la resta es igual a 0, se ha relizado correctamente
+fprintf('Comprobando diferenciacion...\n');
+Res = simplify(Kt_R_Im-(Gamma*Theta));
+fprintf('   %s\n',char(Res));
+
+if(Res == [0 0 0]')
+    fprintf('Diferenciacion correcta.\n\n');
+else
+    fprintf('Algo ha fallado. Info depuracion:\n\n');
+    Gamma
+    Theta
+    Kt_R_Im
+    return;
+end
+
+%% OBTENCION DE COLUMNAS INDEPENDIENTES DE GAMMA %%
+
+l0 = 0.4; % Eslab�n 0
+l1 = 2;   % Eslab�n 1
+l2 = 3;   % Eslab�n 2
+l3 = 4;   % Eslab�n 3
+
+R1 = 50;  % Reductora 1
+R2 = 30;  % Reductora 2
+R3 = 15;  % Reductora 3
+
+K1 = 0.5;
+K2 = 0.4;
+K3 = 0.35;
+
+R = diag([R1 R2 R3]);
+K = diag([K1 K2 K3]);
+
+g = 9.81;
+
+for i=1:3:24
+    qdd1 = rand; qd1 = rand; q1 = rand;
+    qdd2 = rand; qd2 = rand; q2 = rand;
+    qdd3 = rand; qd3 = rand; q3 = rand;
+    Gamma_num(i:i+2,:) = eval(Gamma);
+end
+
+fprintf('Calculando columnas independientes de gamma y reduciendo...\n');
+
+[A,jb] = rref(Gamma_num);
+
+aux = round(A,7)*Theta;
+
+fprintf('Theta reducido numerico:\n');
+
+% Solo guardamos los parametros de las columnas independientes
+Theta_reduced = aux(find(aux));
+for i = 1:length(Theta_reduced)
+    fprintf('       %s\n', char(Theta_reduced(i)))
+end
+fprintf('\n');
+
+% Guardamos solo las columnas independientes de gamma
+Gamma_reduced = Gamma(1:3,jb);
+
+clear l1 l2 l3 R1 R2 R3;
+syms Theta_reduced l1 l2 l3 R1 R2 R3 real;
+
+
+fprintf('En simbolico theta resulta ser:\n');
+Theta_reduced = [(1/R1^2)*Ixx2 + (1/R1^2)*Iyy1 + (1/R1^2)*Iyy3 - (1/R1^2)*Izz3 + Jm1;
+    Bm1;
+    m2*Lc2^2 - Ixx2 + Iyy2 - l2^2*m2 - l2^2*m3;
+    Lc2*m2 - l2*m3 - l2*m2;
+    (1/R2^2)*Ixx2 - (1/R2^2)*Iyy2 + (1/R2^2)*Izz2 + Jm2;
+    Bm2;
+    m3*Lc3^2 + Izz3 - (l3^2)*m3;
+    Lc3*m3 - l3*m3;
+    Jm3;
+    Bm3;
+    Ixx3 - Iyy3 + Izz3];
+for i = 1:length(Theta_reduced)
+    fprintf('       %s\n', char(Theta_reduced(i)))
+end
+fprintf('\n');
+fprintf('Comprobando los resultados...\n');
+% Si el resultado de la resta es igual a 0, se ha relizad correctamente
+Res = simplify(Kt_R_Im-(Gamma_reduced*Theta_reduced));
+fprintf('   %s\n',char(Res));
+
+if(Res == [0 0 0]')
+    fprintf('Diferenciacion correcta\n\n\n');
+else
+    fprintf('Algo ha fallado. Info depuracion:\n');
+    Gamma_reduced
+    Theta_reduced
+    Kt_R_Im
+end
+
+%% SIMULACION %%
+
+% Periodo de muestreo
+Ts = 0.001;
+
+% Tiempo inicial y final de simulacion
+ini = 1;
+fin = 50;
+
+% Reductoras
+R1=50;R2=30;R3=15;
+
+% Entradas de cosenos con frecuancioas difernetes y ponderadas por una
+% exponencial
+Im1_cc = 0; Im2_cc = 3.7; Im3_cc = 1;
+
+Tau1 = 8;Tau2 = 15;Tau3 = 20;
+
+Aa1 = 1;            wa1 = 1.3;  Ab1 = 0.5;       wb1 = wa1*5;
+Aa2 = Im2_cc*0.7;  wa2 = 3;    Ab2 = Aa2*0.8; wb2 = wa2*3.5;
+Aa3 = Im3_cc*0.6;  wa3 = 5;    Ab3 = Aa3*0.62;  wb3 = wa3*2.2;
+
+% Condiciones iniciales del manipulador
+q2ini=-0.80020550259323;
+q3ini=0.202600802956157;
+
+% Porcentaje de ruido en la se�al del tacomentro
+noise = 0.01;
+
+fprintf('Empezando simulacion..\n');
+sim('analisisDinamico.slx'); 
+fprintf('Fin de simulacion.\n');
+%%
+
+% Representamos las corrientes y las salidas del modelo real y modelado
+figure('units','normalized','outerposition',[0 0 1 1])
+subplot1 = subplot(3,2,1);
+plot1 = plot(tout,Im(:,1));
+set(plot1(1),'DisplayName','Corriente I_1');
+legend(subplot1,'show');
+grid;
+subplot1 = subplot(3,2,3);
+plot1 = plot(tout,Im(:,2));
+set(plot1(1),'DisplayName','Corriente I_2');
+legend(subplot1,'show');
+grid;
+subplot1 = subplot(3,2,5);
+plot1 = plot(tout,Im(:,3));
+set(plot1(1),'DisplayName','Corriente I_3');
+legend(subplot1,'show');
+grid;
+
+subplot1 = subplot(3,2,2);
+plot1 = plot(tout,q(:,1));
+set(plot1(1),'DisplayName','Posicion Angular 1');
+legend(subplot1,'show');
+grid;
+subplot1 = subplot(3,2,4);
+plot1 = plot(tout,q(:,2));
+set(plot1(1),'DisplayName','Posicion Angular 2');
+legend(subplot1,'show');
+grid;
+subplot1 = subplot(3,2,6);
+plot1 = plot(tout,q(:,3));
+set(plot1(1),'DisplayName','Posicion Angular 3');
+legend(subplot1,'show');
+grid;
+
+save('modeloSimbolico.mat');
+
+
+
+##### SOURCE END #####
+--></body></html>

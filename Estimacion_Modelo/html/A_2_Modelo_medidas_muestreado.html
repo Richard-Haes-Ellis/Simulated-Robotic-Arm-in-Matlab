@@ -1,0 +1,703 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>A_2_Modelo_medidas_muestreado</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-01-08"><meta name="DC.source" content="A_2_Modelo_medidas_muestreado.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput">clear <span class="string">all</span>;
+load(<span class="string">'modeloSimbolico.mat'</span>);
+
+<span class="comment">% Loguitud de eslabones</span>
+l0 = 0.4;  <span class="comment">% Eslab&#65533;n 5</span>
+l1 = 0.5;  <span class="comment">% Eslab&#65533;n 1</span>
+l2 = 1;    <span class="comment">% Eslab&#65533;n 2</span>
+l3 = 0.5;  <span class="comment">% Eslab&#65533;n 9</span>
+
+<span class="comment">% Reductoras de los motores</span>
+R1 = 50;
+R2 = 30;
+R3 = 15;
+
+<span class="comment">% Ganancias de los motores</span>
+K1 = 0.5;
+K2 = 0.4;
+K3 = 0.35;
+
+R = diag([R1 R2 R3]);
+K = diag([K1 K2 K3]);
+
+Gamma_exp   = [];
+Im_R_K_exp  = [];
+
+g=9.81;
+
+<span class="comment">% Creamos un filtro para filtrar datos del tacometro</span>
+<span class="comment">% [Numeradorf,Denominadorf] = butter(1,4*Ts/2,'Low');</span>
+
+
+d = designfilt(<span class="string">'lowpassfir'</span>, <span class="keyword">...</span>
+    <span class="string">'PassbandFrequency'</span>,0.005,<span class="string">'StopbandFrequency'</span>,0.015, <span class="keyword">...</span>
+    <span class="string">'PassbandRipple'</span>,0.2,<span class="string">'StopbandAttenuation'</span>,120, <span class="keyword">...</span>
+    <span class="string">'DesignMethod'</span>,<span class="string">'equiripple'</span>);
+
+qdrealfiltered = filtfilt(d,qdreal);
+
+<span class="comment">% Aplicamos el filtro obtenido a la velocidad</span>
+<span class="comment">% qdrealfiltered = filter (Numeradorf,Denominadorf,qdreal);</span>
+
+<span class="comment">% Derivamos la poscion filtrada para obtener la velocidad</span>
+<span class="keyword">for</span> i=1:1:length(Ireal)
+
+    <span class="keyword">if</span> (i==1)
+        qddreal(i,1)=qdd(i,1);
+        qddreal(i,2)=qdd(i,2);
+        qddreal(i,3)=qdd(i,3);
+    <span class="keyword">else</span>
+        qddreal(i,1)=(qdrealfiltered(i,1)-qdrealfiltered(i-1,1))/(2*Ts); <span class="comment">% Velocidad</span>
+        qddreal(i,2)=(qdrealfiltered(i,2)-qdrealfiltered(i-1,2))/(2*Ts); <span class="comment">% Velocidad</span>
+        qddreal(i,3)=(qdrealfiltered(i,3)-qdrealfiltered(i-1,3))/(2*Ts); <span class="comment">% Velocidad</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><pre class="codeinput">figure(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1])
+slt = subplot(3,2,1);
+plt = plot(tout,q(:,2),t,qreal(:,2));
+set(plt(1),<span class="string">'DisplayName'</span>,<span class="string">'Medida Perfecta'</span>);
+set(plt(2),<span class="string">'DisplayName'</span>,<span class="string">'Medida Real'</span>);
+legend(slt,<span class="string">'show'</span>);
+grid;
+ylabel(<span class="string">'rad'</span>);
+xlabel(<span class="string">'t'</span>);
+
+slt = subplot(3,2,3);
+plt = plot(tout,qd(:,2),t,qdreal(:,2),t,qdrealfiltered(:,2),<span class="string">'g'</span>);
+set(plt(1),<span class="string">'DisplayName'</span>,<span class="string">'Medida Perfecta'</span>);
+set(plt(2),<span class="string">'DisplayName'</span>,<span class="string">'Medida Real'</span>);
+set(plt(3),<span class="string">'DisplayName'</span>,<span class="string">'Medida Filtrada'</span>);
+legend(slt,<span class="string">'show'</span>);
+grid;
+ylabel(<span class="string">'rad/s'</span>);
+xlabel(<span class="string">'t'</span>);
+
+slt = subplot(3,2,5);
+plt = plot(tout,qdd(:,2),t,qddreal(:,2));
+set(plt(1),<span class="string">'DisplayName'</span>,<span class="string">'Medida Perfecta'</span>);
+set(plt(2),<span class="string">'DisplayName'</span>,<span class="string">'Medida Calculada'</span>);
+legend(slt,<span class="string">'show'</span>);
+grid;
+ylabel(<span class="string">'rad/s&sup2;'</span>);
+xlabel(<span class="string">'t'</span>);
+
+subplot(3,2,2);
+plot(tout(1:fin/Ts),abs(q(1:fin/Ts,2)-qreal(1:fin/Ts,2)),<span class="string">'r'</span>);
+hold <span class="string">on</span>;
+line([0 fin], [mean(abs(q(1:fin/Ts,2)-qreal(1:fin/Ts,2))) mean(abs(q(1:fin/Ts,2)-qreal(1:fin/Ts,2)))]);
+hold <span class="string">on</span>;
+title(<span class="string">'error cometido de q'</span>);
+subplot(3,2,4);
+plot(tout(1:fin/Ts),abs(qd(1:fin/Ts,2)-qdreal(1:fin/Ts,2)),<span class="string">'r'</span>);
+hold <span class="string">on</span>;
+line([0 fin], [mean(abs(qd(1:fin/Ts,2)-qdreal(1:fin/Ts,2))) mean(abs(qd(1:fin/Ts,2)-qdreal(1:fin/Ts,2)))]);
+hold <span class="string">on</span>;
+title(<span class="string">'error cometido de qd'</span>);
+subplot(3,2,6);
+plot(tout(1:fin/Ts),abs(qdd(1:fin/Ts,2)-qddreal(1:fin/Ts,2)),<span class="string">'r'</span>);
+hold <span class="string">on</span>;
+line([0 fin], [mean(abs(qdd(1:fin/Ts,2)-qddreal(1:fin/Ts,2))) mean(abs(qdd(1:fin/Ts,2)-qddreal(1:fin/Ts,2)))]);
+hold <span class="string">on</span>;
+title(<span class="string">'error cometido de qdd'</span>);
+
+fprintf(<span class="string">'Resutlado de filtrar y calcular datos.\n'</span>);
+</pre><pre class="codeoutput">Resutlado de filtrar y calcular datos.
+</pre><img vspace="5" hspace="5" src="A_2_Modelo_medidas_muestreado_01.png" alt=""> <p>Eliminamos el primer segundo de muestras y cojemos 1 de cada 10</p><pre class="codeinput"> qe   = qreal(1000:10:end,:);
+ qde  = qdrealfiltered(1000:10:end,:);
+ qdde = qddreal(1000:10:end,:);
+ Ime  = Ireal(1000:10:end,:);
+
+<span class="comment">% La matriz gamma la rellenamos con datos muestreados y derivados</span>
+
+<span class="keyword">for</span> i=1:1:length(Ime)
+
+    <span class="comment">%fprintf('Evaluando gamma... %f%%',100*i/length(Ime));</span>
+
+    q1 = qe(i,1);
+    q2 = qe(i,2);
+    q3 = qe(i,3);
+
+    qd1 = qde(i,1);
+    qd2 = qde(i,2);
+    qd3 = qde(i,3);
+
+    qdd1 = qdde(i,1);
+    qdd2 = qdde(i,2);
+    qdd3 = qdde(i,3);
+
+    <span class="comment">% Con ese bucle tenedremos una matriz de gamma con todos los experimeitos y otra</span>
+    <span class="comment">% Matriz con las excitaciones del motor</span>
+
+    Gamma_exp  = [Gamma_exp; eval(Gamma_reduced)];
+    Im_R_K_exp = [Im_R_K_exp; K*R*Ime(i,:)'];
+
+    <span class="comment">%fprintf(repmat('\b',1,length(sprintf('Evaluando gamma... %f%%',100*i/length(Ime)))));</span>
+<span class="keyword">end</span>
+fprintf(<span class="string">'Done!\n'</span>);
+
+<span class="comment">% Hacemos la pseudoinversa con (pinv)lscov</span>
+<span class="comment">% Nos dar&#65533; theta_hat que los las estimaciones de los parametros</span>
+fprintf(<span class="string">'Calculating parameters...\n'</span>);
+Theta_hat = lscov(Gamma_exp,Im_R_K_exp);
+fprintf(<span class="string">'Done!\n'</span>);
+
+<span class="comment">% La dimension de gamma tiene que ser de numero de muestras por numero de parametnros</span>
+[num_exp,num_param] = size(Gamma_exp);
+
+<span class="comment">% Cuanto vale la estimacion</span>
+<span class="comment">% Estimar cuanto vale la sigma p en base de las medidas y lo que he medido</span>
+sigma_p_2 = (norm(Im_R_K_exp-Gamma_exp*Theta_hat)^2)/(num_exp-num_param);
+
+<span class="comment">% Matriz de varianza-covarianbza del error:</span>
+C_param = sigma_p_2*inv(Gamma_exp'*Gamma_exp);
+
+fprintf(<span class="string">'Desviacion estandar relativa\n'</span>);
+<span class="keyword">for</span> j=1:num_param
+    Sigma(j) = sqrt(C_param(j,j));
+    Sigma_r(j) =100*(Sigma(j)/Theta_hat(j));
+    fprintf(<span class="string">'Desviacion: %d: %f. \t\t parametro: %s\n'</span>,j,Sigma_r(j),char(Theta_reduced(j)));
+<span class="keyword">end</span>
+
+Theta_hat (6)  = 0.0008;
+Theta_hat (10) = 0.0013;
+
+clear <span class="string">q1</span> <span class="string">qd1</span> <span class="string">qdd1</span> <span class="string">q2</span> <span class="string">qd2</span> <span class="string">qdd2</span> <span class="string">q3</span> <span class="string">qd3</span> <span class="string">qdd3</span> <span class="string">g</span>
+syms <span class="string">q1</span> <span class="string">qd1</span> <span class="string">qdd1</span> <span class="string">q2</span> <span class="string">qd2</span> <span class="string">qdd2</span> <span class="string">q3</span> <span class="string">qd3</span> <span class="string">qdd3</span> <span class="string">g</span> <span class="string">real</span>
+
+fprintf(<span class="string">'\nPresiona Enter para calcular modelo.\n'</span>);
+pause();
+fprintf(<span class="string">'Applicando Newton-Euler...\n'</span>);
+
+Tau = eval(Gamma_reduced*Theta_hat)
+
+syms <span class="string">T1</span> <span class="string">T2</span> <span class="string">T3</span> <span class="string">real</span>;
+
+T1 = Tau(1,:);
+T2 = Tau(2,:);
+T3 = Tau(3,:);
+
+<span class="comment">%Primera ecuaci&#65533;n</span>
+<span class="comment">%--------</span>
+<span class="comment">%Calculo de los terminos de la inercia(afines a qdd)</span>
+M11=diff(T1,qdd1);
+Taux=simplify(T1-M11*qdd1);
+M12=diff(Taux,qdd2);
+Taux=simplify(Taux-M12*qdd2);
+M13=diff(Taux,qdd3);
+Taux=simplify(Taux-M13*qdd3);
+<span class="comment">%Taux restante contiente Centripetos/Coriolis(V) y Gravitatorios(G)</span>
+<span class="comment">%T&#65533;rminos gravitarorios dependen linealmente de 'g'</span>
+G1   = diff(Taux,g)*g;
+Taux = simplify(Taux-G1);
+<span class="comment">%Taux contiene t&#65533;rminos Centripetos/Coriolis</span>
+V1   = Taux;
+
+<span class="comment">%Segunda ecuaci&#65533;n</span>
+M21  = diff(T2,qdd1);
+Taux = simplify(T2-M21*qdd1);
+M22  = diff(Taux,qdd2);
+Taux = simplify(Taux-M22*qdd2);
+M23  = diff(Taux,qdd3);
+Taux = simplify(Taux-M23*qdd3);
+<span class="comment">%Taux restante contiente Centripetos/Coriolis(V) y Gravitatorios(G)</span>
+<span class="comment">%T&#65533;rminos gravitarorios dependen linealmente de 'g'</span>
+G2=diff(Taux,g)*g;
+Taux=simplify(Taux-G2);
+<span class="comment">%Taux contiene t&#65533;rminos Centripetos/Coriolis</span>
+V2=Taux;
+
+<span class="comment">%Tercera ecuaci&#65533;n</span>
+M31=diff(T3,qdd1);
+Taux=simplify(T3-M31*qdd1);
+M32=diff(Taux,qdd2);
+Taux=simplify(Taux-M32*qdd2);
+M33=diff(Taux,qdd3);
+Taux=simplify(Taux-M33*qdd3);
+<span class="comment">%Taux restante contiente Centripetos/Coriolis(V) y Gravitatorios(G)</span>
+<span class="comment">%T&#65533;rminos gravitarorios dependen linealmente de 'g'</span>
+G3=diff(Taux,g)*g;
+Taux=simplify(Taux-G3);
+<span class="comment">%Taux contiene t&#65533;rminos Centripetos/Coriolis</span>
+V3=Taux;
+
+
+<span class="comment">%Simplificar expresiones</span>
+M11=simplify(M11);
+M12=simplify(M12);
+M13=simplify(M13);
+
+M21=simplify(M21);
+M22=simplify(M22);
+M23=simplify(M23);
+
+M31=simplify(M31);
+M32=simplify(M32);
+M31=simplify(M33);
+
+V1=simplify(V1);
+V2=simplify(V2);
+V3=simplify(V3);
+
+G1=simplify(G1);
+G2=simplify(G2);
+G3=simplify(G3);
+
+g = 9.81;
+
+<span class="comment">%Aplicaci&#65533;n en matrices y vectores</span>
+M_num = [M11 M12 M13;M21 M22 M23;M31 M32 M33]
+V_num = [V1 V2 V3]'
+G_num = eval([G1 G2 G3]')
+
+fprintf(<span class="string">'Hecho!\n\n'</span>);
+
+fprintf(<span class="string">'Generando funcion para simulink...\n'</span>);
+
+syms <span class="string">q1</span> <span class="string">q2</span> <span class="string">q3</span> <span class="string">dq1</span> <span class="string">dq2</span> <span class="string">dq3</span> <span class="string">Im1</span> <span class="string">Im2</span> <span class="string">Im3</span> <span class="string">real</span>
+
+q  = [q1 q2 q3]';
+qd = [qd1 qd2 qd3]';
+Im = [Im1 Im2 Im3]';
+
+
+<span class="comment">% Reductoras de los motores</span>
+R1 = 50;
+R2 = 30;
+R3 = 15;
+
+<span class="comment">% Ganancias de los motores</span>
+K1 = 0.5;
+K2 = 0.4;
+K3 = 0.35;
+
+R = diag([R1 R2 R3]);
+Kt = diag([K1 K2 K3]);
+g = 9.81;
+
+qdd = inv(M_num)*(Kt*R*Im - V_num - G_num);
+
+save(<span class="string">'../Control/modeloReal.mat'</span>,<span class="string">'M_num'</span>,<span class="string">'V_num'</span>,<span class="string">'G_num'</span>,<span class="string">'Kt'</span>,<span class="string">'R'</span>);
+
+matlabFunction(qdd,<span class="string">'file'</span>,<span class="string">'modeloReal'</span>,<span class="string">'vars'</span>,{[qd;q],Im});
+
+fprintf(<span class="string">'Terminado.\n\n'</span>);
+</pre><pre class="codeoutput">Done!
+Calculating parameters...
+Done!
+Desviacion estandar relativa
+Desviacion: 1: 0.689964. 		 parametro: Jm1 + Ixx2/R1^2 + Iyy1/R1^2 + Iyy3/R1^2 - Izz3/R1^2
+Desviacion: 2: 2.390359. 		 parametro: Bm1
+Desviacion: 3: -4.948723. 		 parametro: Iyy2 - Ixx2 + Lc2^2*m2 - l2^2*m2 - l2^2*m3
+Desviacion: 4: -0.097318. 		 parametro: Lc2*m2 - l2*m2 - l2*m3
+Desviacion: 5: 0.269996. 		 parametro: Jm2 + Ixx2/R2^2 - Iyy2/R2^2 + Izz2/R2^2
+Desviacion: 6: 76.838072. 		 parametro: Bm2
+Desviacion: 7: -4.023745. 		 parametro: Izz3 + Lc3^2*m3 - l3^2*m3
+Desviacion: 8: -0.302121. 		 parametro: Lc3*m3 - l3*m3
+Desviacion: 9: 1.937635. 		 parametro: Jm3
+Desviacion: 10: 21.777343. 		 parametro: Bm3
+Desviacion: 11: -13.958682. 		 parametro: Ixx3 - Iyy3 + Izz3
+
+Presiona Enter para calcular modelo.
+Applicando Newton-Euler...
+ 
+Tau =
+ 
+ (3492354207892321*qd1)/1125899906842624 + (41658539340612823*qdd1)/1125899906842624 + (6488769689148601*qdd1*cos(2*q2))/2251799813685248 + (1041339867668763*qdd1*cos(2*q2 + 2*q3))/9007199254740992 + (68402539804209*qdd1*cos(q3))/70368744177664 + (68402539804209*qdd1*cos(2*q2 + q3))/70368744177664 - (68402539804209*qd1*qd3*sin(q3))/70368744177664 - (68402539804209*qd1*qd2*sin(2*q2 + q3))/35184372088832 - (68402539804209*qd1*qd3*sin(2*q2 + q3))/70368744177664 - (6488769689148601*qd1*qd2*sin(2*q2))/1125899906842624 - (1041339867668763*qd1*qd2*sin(2*q2 + 2*q3))/4503599627370496 - (1041339867668763*qd1*qd3*sin(2*q2 + 2*q3))/4503599627370496
+                                                                                        (18*qd2)/25 + (147057967517680151*qdd2)/1125899906842624 - (703206500895889*qdd3)/562949953421312 - (68402539804209*qd3^2*sin(q3))/70368744177664 + (68402539804209*qd1^2*sin(2*q2 + q3))/70368744177664 + (68402539804209*g*cos(q2 + q3))/70368744177664 + (6488769689148601*qd1^2*sin(2*q2))/2251799813685248 + (5603940918736859*g*cos(q2))/1125899906842624 + (1041339867668763*qd1^2*sin(2*q2 + 2*q3))/9007199254740992 + (68402539804209*qdd2*cos(q3))/35184372088832 + (68402539804209*qdd3*cos(q3))/70368744177664 - (68402539804209*qd2*qd3*sin(q3))/35184372088832
+                                                                                                                                                                                                    (117*qd3)/400 - (703206500895889*qdd1)/562949953421312 - (703206500895889*qdd2)/562949953421312 + (6730926518466217*qdd3)/1125899906842624 + (68402539804209*qd1^2*sin(q3))/140737488355328 + (68402539804209*qd2^2*sin(q3))/70368744177664 + (68402539804209*qd1^2*sin(2*q2 + q3))/140737488355328 + (68402539804209*g*cos(q2 + q3))/70368744177664 + (1041339867668763*qd1^2*sin(2*q2 + 2*q3))/9007199254740992 + (68402539804209*qdd2*cos(q3))/70368744177664
+ 
+ 
+M_num =
+ 
+[ (68402539804209*cos(2*q2 + q3))/70368744177664 + (6488769689148601*cos(2*q2))/2251799813685248 + (1041339867668763*cos(2*q2 + 2*q3))/9007199254740992 + (68402539804209*cos(q3))/70368744177664 + 41658539340612823/1125899906842624,                                                                             0,                                                                         0]
+[                                                                                                                                                                                                                                    0, (68402539804209*cos(q3))/35184372088832 + 147057967517680151/1125899906842624, (68402539804209*cos(q3))/70368744177664 - 703206500895889/562949953421312]
+[                                                                                                                                                                                                    6730926518466217/1125899906842624,     (68402539804209*cos(q3))/70368744177664 - 703206500895889/562949953421312,                                         6730926518466217/1125899906842624]
+ 
+ 
+V_num =
+ 
+                -(qd1*(25955078756594404*qd2*sin(2*q2) + 1041339867668763*qd2*sin(2*q2 + 2*q3) + 1041339867668763*qd3*sin(2*q2 + 2*q3) + 4377762547469376*qd3*sin(q3) + 8755525094938752*qd2*sin(2*q2 + q3) + 4377762547469376*qd3*sin(2*q2 + q3) - 13969416831569284))/4503599627370496
+ (18*qd2)/25 - (68402539804209*qd3^2*sin(q3))/70368744177664 + (68402539804209*qd1^2*sin(2*q2 + q3))/70368744177664 + (6488769689148601*qd1^2*sin(2*q2))/2251799813685248 + (1041339867668763*qd1^2*sin(2*q2 + 2*q3))/9007199254740992 - (68402539804209*qd2*qd3*sin(q3))/35184372088832
+                                                     (117*qd3)/400 + (68402539804209*qd1^2*sin(q3))/140737488355328 + (68402539804209*qd2^2*sin(q3))/70368744177664 + (68402539804209*qd1^2*sin(2*q2 + q3))/140737488355328 + (1041339867668763*qd1^2*sin(2*q2 + 2*q3))/9007199254740992
+ 
+ 
+G_num =
+ 
+                                                                                                    0
+ (67102891547929029*cos(q2 + q3))/7036874417766400 + (5497466041280858679*cos(q2))/112589990684262400
+                                                      (5368231323834323*cos(q2 + q3))/562949953421312
+ 
+Hecho!
+
+Generando funcion para simulink...
+Terminado.
+
+</pre><img vspace="5" hspace="5" src="A_2_Modelo_medidas_muestreado_02.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+
+clear all;
+load('modeloSimbolico.mat');
+
+% Loguitud de eslabones
+l0 = 0.4;  % Eslab�n 5
+l1 = 0.5;  % Eslab�n 1
+l2 = 1;    % Eslab�n 2
+l3 = 0.5;  % Eslab�n 9
+
+% Reductoras de los motores
+R1 = 50;
+R2 = 30;
+R3 = 15;
+
+% Ganancias de los motores
+K1 = 0.5;
+K2 = 0.4;
+K3 = 0.35;
+
+R = diag([R1 R2 R3]);
+K = diag([K1 K2 K3]);
+
+Gamma_exp   = [];
+Im_R_K_exp  = [];
+
+g=9.81;
+
+% Creamos un filtro para filtrar datos del tacometro 
+% [Numeradorf,Denominadorf] = butter(1,4*Ts/2,'Low'); 
+
+
+d = designfilt('lowpassfir', ...
+    'PassbandFrequency',0.005,'StopbandFrequency',0.015, ...
+    'PassbandRipple',0.2,'StopbandAttenuation',120, ...
+    'DesignMethod','equiripple');
+
+qdrealfiltered = filtfilt(d,qdreal);
+         
+% Aplicamos el filtro obtenido a la velocidad
+% qdrealfiltered = filter (Numeradorf,Denominadorf,qdreal);
+
+% Derivamos la poscion filtrada para obtener la velocidad
+for i=1:1:length(Ireal)
+
+    if (i==1)
+        qddreal(i,1)=qdd(i,1);
+        qddreal(i,2)=qdd(i,2);
+        qddreal(i,3)=qdd(i,3);
+    else
+        qddreal(i,1)=(qdrealfiltered(i,1)-qdrealfiltered(i-1,1))/(2*Ts); % Velocidad
+        qddreal(i,2)=(qdrealfiltered(i,2)-qdrealfiltered(i-1,2))/(2*Ts); % Velocidad
+        qddreal(i,3)=(qdrealfiltered(i,3)-qdrealfiltered(i-1,3))/(2*Ts); % Velocidad
+    end 
+end
+
+%%
+
+figure('units','normalized','outerposition',[0 0 1 1])
+slt = subplot(3,2,1);
+plt = plot(tout,q(:,2),t,qreal(:,2)); 
+set(plt(1),'DisplayName','Medida Perfecta');
+set(plt(2),'DisplayName','Medida Real');
+legend(slt,'show');
+grid;
+ylabel('rad');
+xlabel('t');
+
+slt = subplot(3,2,3);
+plt = plot(tout,qd(:,2),t,qdreal(:,2),t,qdrealfiltered(:,2),'g');
+set(plt(1),'DisplayName','Medida Perfecta');
+set(plt(2),'DisplayName','Medida Real');
+set(plt(3),'DisplayName','Medida Filtrada');
+legend(slt,'show');
+grid;
+ylabel('rad/s');
+xlabel('t');
+
+slt = subplot(3,2,5);
+plt = plot(tout,qdd(:,2),t,qddreal(:,2));  
+set(plt(1),'DisplayName','Medida Perfecta');
+set(plt(2),'DisplayName','Medida Calculada');
+legend(slt,'show');
+grid;
+ylabel('rad/s²');
+xlabel('t');
+
+subplot(3,2,2);
+plot(tout(1:fin/Ts),abs(q(1:fin/Ts,2)-qreal(1:fin/Ts,2)),'r');
+hold on;
+line([0 fin], [mean(abs(q(1:fin/Ts,2)-qreal(1:fin/Ts,2))) mean(abs(q(1:fin/Ts,2)-qreal(1:fin/Ts,2)))]);
+hold on;
+title('error cometido de q');
+subplot(3,2,4);
+plot(tout(1:fin/Ts),abs(qd(1:fin/Ts,2)-qdreal(1:fin/Ts,2)),'r');
+hold on;
+line([0 fin], [mean(abs(qd(1:fin/Ts,2)-qdreal(1:fin/Ts,2))) mean(abs(qd(1:fin/Ts,2)-qdreal(1:fin/Ts,2)))]);
+hold on;
+title('error cometido de qd');
+subplot(3,2,6);
+plot(tout(1:fin/Ts),abs(qdd(1:fin/Ts,2)-qddreal(1:fin/Ts,2)),'r');
+hold on;
+line([0 fin], [mean(abs(qdd(1:fin/Ts,2)-qddreal(1:fin/Ts,2))) mean(abs(qdd(1:fin/Ts,2)-qddreal(1:fin/Ts,2)))]);
+hold on;
+title('error cometido de qdd');
+
+fprintf('Resutlado de filtrar y calcular datos.\n');
+
+
+%%
+% Eliminamos el primer segundo de muestras y cojemos 1 de cada 10  
+ qe   = qreal(1000:10:end,:);
+ qde  = qdrealfiltered(1000:10:end,:);
+ qdde = qddreal(1000:10:end,:);
+ Ime  = Ireal(1000:10:end,:);
+
+% La matriz gamma la rellenamos con datos muestreados y derivados
+
+for i=1:1:length(Ime)
+    
+    %fprintf('Evaluando gamma... %f%%',100*i/length(Ime));
+    
+    q1 = qe(i,1);
+    q2 = qe(i,2);
+    q3 = qe(i,3);
+
+    qd1 = qde(i,1);
+    qd2 = qde(i,2);
+    qd3 = qde(i,3);
+
+    qdd1 = qdde(i,1);
+    qdd2 = qdde(i,2);
+    qdd3 = qdde(i,3);
+    
+    % Con ese bucle tenedremos una matriz de gamma con todos los experimeitos y otra
+    % Matriz con las excitaciones del motor
+    
+    Gamma_exp  = [Gamma_exp; eval(Gamma_reduced)];
+    Im_R_K_exp = [Im_R_K_exp; K*R*Ime(i,:)'];
+   
+    %fprintf(repmat('\b',1,length(sprintf('Evaluando gamma... %f%%',100*i/length(Ime)))));
+end
+fprintf('Done!\n');
+
+% Hacemos la pseudoinversa con (pinv)lscov
+% Nos dar� theta_hat que los las estimaciones de los parametros
+fprintf('Calculating parameters...\n');
+Theta_hat = lscov(Gamma_exp,Im_R_K_exp);
+fprintf('Done!\n');
+
+% La dimension de gamma tiene que ser de numero de muestras por numero de parametnros
+[num_exp,num_param] = size(Gamma_exp);
+
+% Cuanto vale la estimacion 
+% Estimar cuanto vale la sigma p en base de las medidas y lo que he medido
+sigma_p_2 = (norm(Im_R_K_exp-Gamma_exp*Theta_hat)^2)/(num_exp-num_param);
+
+% Matriz de varianza-covarianbza del error:
+C_param = sigma_p_2*inv(Gamma_exp'*Gamma_exp);
+
+fprintf('Desviacion estandar relativa\n');
+for j=1:num_param
+    Sigma(j) = sqrt(C_param(j,j));
+    Sigma_r(j) =100*(Sigma(j)/Theta_hat(j));
+    fprintf('Desviacion: %d: %f. \t\t parametro: %s\n',j,Sigma_r(j),char(Theta_reduced(j)));
+end
+
+Theta_hat (6)  = 0.0008;
+Theta_hat (10) = 0.0013;
+
+clear q1 qd1 qdd1 q2 qd2 qdd2 q3 qd3 qdd3 g
+syms q1 qd1 qdd1 q2 qd2 qdd2 q3 qd3 qdd3 g real
+
+fprintf('\nPresiona Enter para calcular modelo.\n');
+pause();
+fprintf('Applicando Newton-Euler...\n');
+
+Tau = eval(Gamma_reduced*Theta_hat)
+
+syms T1 T2 T3 real;
+
+T1 = Tau(1,:);
+T2 = Tau(2,:);
+T3 = Tau(3,:);
+
+%Primera ecuaci�n
+%REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+%Calculo de los terminos de la inercia(afines a qdd)
+M11=diff(T1,qdd1);
+Taux=simplify(T1-M11*qdd1);
+M12=diff(Taux,qdd2);
+Taux=simplify(Taux-M12*qdd2);
+M13=diff(Taux,qdd3);
+Taux=simplify(Taux-M13*qdd3);
+%Taux restante contiente Centripetos/Coriolis(V) y Gravitatorios(G)
+%T�rminos gravitarorios dependen linealmente de 'g'
+G1   = diff(Taux,g)*g;
+Taux = simplify(Taux-G1);
+%Taux contiene t�rminos Centripetos/Coriolis
+V1   = Taux;
+
+%Segunda ecuaci�n
+M21  = diff(T2,qdd1);
+Taux = simplify(T2-M21*qdd1);
+M22  = diff(Taux,qdd2);
+Taux = simplify(Taux-M22*qdd2);
+M23  = diff(Taux,qdd3);
+Taux = simplify(Taux-M23*qdd3);
+%Taux restante contiente Centripetos/Coriolis(V) y Gravitatorios(G)
+%T�rminos gravitarorios dependen linealmente de 'g'
+G2=diff(Taux,g)*g;
+Taux=simplify(Taux-G2);
+%Taux contiene t�rminos Centripetos/Coriolis
+V2=Taux;
+
+%Tercera ecuaci�n
+M31=diff(T3,qdd1);
+Taux=simplify(T3-M31*qdd1);
+M32=diff(Taux,qdd2);
+Taux=simplify(Taux-M32*qdd2);
+M33=diff(Taux,qdd3);
+Taux=simplify(Taux-M33*qdd3);
+%Taux restante contiente Centripetos/Coriolis(V) y Gravitatorios(G)
+%T�rminos gravitarorios dependen linealmente de 'g'
+G3=diff(Taux,g)*g;
+Taux=simplify(Taux-G3);
+%Taux contiene t�rminos Centripetos/Coriolis
+V3=Taux;
+
+
+%Simplificar expresiones
+M11=simplify(M11);
+M12=simplify(M12);
+M13=simplify(M13);
+
+M21=simplify(M21);
+M22=simplify(M22);
+M23=simplify(M23);
+
+M31=simplify(M31);
+M32=simplify(M32);
+M31=simplify(M33);
+
+V1=simplify(V1);
+V2=simplify(V2);
+V3=simplify(V3);
+
+G1=simplify(G1);
+G2=simplify(G2);
+G3=simplify(G3);
+
+g = 9.81;
+
+%Aplicaci�n en matrices y vectores
+M_num = [M11 M12 M13;M21 M22 M23;M31 M32 M33]
+V_num = [V1 V2 V3]'
+G_num = eval([G1 G2 G3]')
+
+fprintf('Hecho!\n\n');
+
+fprintf('Generando funcion para simulink...\n');
+
+syms q1 q2 q3 dq1 dq2 dq3 Im1 Im2 Im3 real
+
+q  = [q1 q2 q3]';
+qd = [qd1 qd2 qd3]';
+Im = [Im1 Im2 Im3]';
+
+
+% Reductoras de los motores
+R1 = 50;
+R2 = 30;
+R3 = 15;
+
+% Ganancias de los motores
+K1 = 0.5;
+K2 = 0.4;
+K3 = 0.35;
+
+R = diag([R1 R2 R3]);
+Kt = diag([K1 K2 K3]);
+g = 9.81;
+
+qdd = inv(M_num)*(Kt*R*Im - V_num - G_num);
+
+save('../Control/modeloReal.mat','M_num','V_num','G_num','Kt','R');
+
+matlabFunction(qdd,'file','modeloReal','vars',{[qd;q],Im});
+
+fprintf('Terminado.\n\n');
+
+
+
+
+
+
+
+##### SOURCE END #####
+--></body></html>

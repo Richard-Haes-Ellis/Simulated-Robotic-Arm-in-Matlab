@@ -399,7 +399,7 @@ Gamma_reduced = Gamma(1:3,jb);
 
 clear l1 l2 l3 R1 R2 R3;
 syms Theta_reduced l1 l2 l3 R1 R2 R3 real;
-uj
+
 
 fprintf('En simbolico theta resulta ser:\n');
 Theta_reduced = [(1/R1^2)*Ixx2 + (1/R1^2)*Iyy1 + (1/R1^2)*Iyy3 - (1/R1^2)*Izz3 + Jm1;

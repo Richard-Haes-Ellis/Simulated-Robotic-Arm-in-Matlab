@@ -1,0 +1,489 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>A_SimulacionAnalisis</title><meta name="generator" content="MATLAB 9.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-01-08"><meta name="DC.source" content="A_SimulacionAnalisis.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1></h1><!--introduction--><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Simulacion</a></li><li><a href="#2">Graficamos resutlados</a></li><li><a href="#3">Guardar controlador</a></li></ul></div><h2 id="1">Simulacion</h2><pre class="codeinput">fprintf(<span class="string">'Simulando...\n'</span>);
+<span class="comment">% Tiempo de muestreo del generador de trayecotrias</span>
+Ts_reference = 0.015;
+<span class="comment">% Tiempo de muestreo del control</span>
+Ts_control = 0.001;
+<span class="comment">% Tiempo de simulacion</span>
+fin=5;
+<span class="comment">% Tiempo de muestreo para analisis</span>
+ts = 0.001;
+
+sim(<span class="string">'SimulacionControl.slx'</span>);
+
+fprintf(<span class="string">'Fin simulacion.\n\n'</span>);
+</pre><pre class="codeoutput">Simulando...
+Fin simulacion.
+
+</pre><h2 id="2">Graficamos resutlados</h2><pre class="codeinput">figure(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1])
+<span class="comment">% Plot q1 vs qr1 vs qr1s</span>
+splt = subplot(3,2,1);
+plt  = plot(t,q(:,1),<span class="string">'r'</span>,t,qr(:,1),<span class="string">'b'</span>,t,qrs(:,1),<span class="string">'k'</span>);
+set(plt(1),<span class="string">'DisplayName'</span>,<span class="string">'$q_1$'</span>,<span class="string">'Color'</span>,[1 0 0]);
+set(plt(2),<span class="string">'DisplayName'</span>,<span class="string">'$q_1$ referencia'</span>);
+set(plt(3),<span class="string">'DisplayName'</span>,<span class="string">'$q_1$ ref. muestreado'</span>);
+leg = legend(splt,<span class="string">'show'</span>);
+set(leg,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+ylabel(<span class="string">'rad'</span>);
+xlabel(<span class="string">'time'</span>);
+grid;
+<span class="comment">% Plot q2 vs qr2</span>
+splt = subplot(3,2,3);
+plt  = plot(t,q(:,2),<span class="string">'r'</span>,t,qr(:,2),<span class="string">'b'</span>,t,qrs(:,2),<span class="string">'k'</span>);
+set(plt(1),<span class="string">'DisplayName'</span>,<span class="string">'$q_2$'</span>,<span class="string">'Color'</span>,[1 0 0]);
+set(plt(2),<span class="string">'DisplayName'</span>,<span class="string">'$q_2$ referencia'</span>);
+set(plt(3),<span class="string">'DisplayName'</span>,<span class="string">'$q_2$ ref. muestreado'</span>);
+leg = legend(splt,<span class="string">'show'</span>);
+set(leg,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+ylabel(<span class="string">'rad'</span>);
+xlabel(<span class="string">'time'</span>);
+grid;
+<span class="comment">% Plot q3 vs qr3</span>
+splt = subplot(3,2,5);
+plt  = plot(t,q(:,3),<span class="string">'r'</span>,t,qr(:,3),<span class="string">'b'</span>,t,qrs(:,3),<span class="string">'k'</span>);
+set(plt(1),<span class="string">'DisplayName'</span>,<span class="string">'$q_3$'</span>,<span class="string">'Color'</span>,[1 0 0]);
+set(plt(2),<span class="string">'DisplayName'</span>,<span class="string">'$q_3$ referencia'</span>);
+set(plt(3),<span class="string">'DisplayName'</span>,<span class="string">'$q_3$ ref. muestreado'</span>);
+leg = legend(splt,<span class="string">'show'</span>);
+set(leg,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+ylabel(<span class="string">'rad'</span>);
+xlabel(<span class="string">'time'</span>);
+grid;
+
+<span class="comment">% Error q1</span>
+splt = subplot(3,2,2);
+plt = plot(t,q(:,1)-qrs(:,1));
+set(plt(1),<span class="string">'DisplayName'</span>,<span class="string">'Error de $q_1$'</span>);
+leg = legend(splt,<span class="string">'show'</span>);
+set(leg,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+ylabel(<span class="string">'rad'</span>);
+xlabel(<span class="string">'time'</span>);
+grid;
+<span class="comment">% Error q2</span>
+splt = subplot(3,2,4);
+plt = plot(t,q(:,2)-qrs(:,2));
+set(plt(1),<span class="string">'DisplayName'</span>,<span class="string">'Error de $q_2$'</span>);
+leg = legend(splt,<span class="string">'show'</span>);
+set(leg,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+ylabel(<span class="string">'rad'</span>);
+xlabel(<span class="string">'time'</span>);
+grid;
+<span class="comment">% Error q3</span>
+splt = subplot(3,2,6);
+plt = plot(t,q(:,3)-qrs(:,3));
+set(plt(1),<span class="string">'DisplayName'</span>,<span class="string">'Error de $q_3$'</span>);
+leg = legend(splt,<span class="string">'show'</span>);
+set(leg,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+ylabel(<span class="string">'rad'</span>);
+xlabel(<span class="string">'time'</span>);
+grid;
+
+figure(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1])
+<span class="comment">% Plot qd1 vs qdr1</span>
+splt = subplot(3,2,1);
+plt  = plot(t,qd(:,1),<span class="string">'r'</span>,t,qdr(:,1),<span class="string">'b'</span>,t,qdrs(:,1),<span class="string">'k'</span>);
+set(plt(1),<span class="string">'DisplayName'</span>,<span class="string">'$\dot q_1$'</span>,<span class="string">'Color'</span>,[1 0 0]);
+set(plt(2),<span class="string">'DisplayName'</span>,<span class="string">'$\dot q_1$ referencia'</span>);
+set(plt(3),<span class="string">'DisplayName'</span>,<span class="string">'$\dot q_1$ ref. muestreado'</span>);
+leg = legend(splt,<span class="string">'show'</span>);
+set(leg,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+ylabel(<span class="string">'rad/s'</span>);
+xlabel(<span class="string">'time'</span>);
+grid;
+<span class="comment">% Plot qd2 vs qdr2</span>
+splt = subplot(3,2,3);
+plt  = plot(t,qd(:,2),<span class="string">'r'</span>,t,qdr(:,2),<span class="string">'b'</span>,t,qdrs(:,2),<span class="string">'k'</span>);
+set(plt(1),<span class="string">'DisplayName'</span>,<span class="string">'$\dot q_2$'</span>,<span class="string">'Color'</span>,[1 0 0]);
+set(plt(2),<span class="string">'DisplayName'</span>,<span class="string">'$\dot q_2$ referencia'</span>);
+set(plt(3),<span class="string">'DisplayName'</span>,<span class="string">'$\dot q_2$ ref. muestreado'</span>);
+leg = legend(splt,<span class="string">'show'</span>);
+set(leg,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+ylabel(<span class="string">'rad/s'</span>);
+xlabel(<span class="string">'time'</span>);
+grid;
+<span class="comment">% Plot qd3 vs qdr3</span>
+splt = subplot(3,2,5);
+plt  = plot(t,qd(:,3),<span class="string">'r'</span>,t,qdr(:,3),<span class="string">'b'</span>,t,qdrs(:,3),<span class="string">'k'</span>);
+set(plt(1),<span class="string">'DisplayName'</span>,<span class="string">'$\dot q_3$ '</span>);
+set(plt(2),<span class="string">'DisplayName'</span>,<span class="string">'$\dot q_3$ referencia'</span>);
+set(plt(3),<span class="string">'DisplayName'</span>,<span class="string">'$\dot q_3$ ref. muestreado'</span>);
+leg = legend(splt,<span class="string">'show'</span>);
+set(leg,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+ylabel(<span class="string">'rad/s'</span>);
+xlabel(<span class="string">'time'</span>);
+grid;
+
+<span class="comment">% Error qd1</span>
+splt = subplot(3,2,2);
+plt = plot(t,qd(:,1)-qdrs(:,1));
+set(plt(1),<span class="string">'DisplayName'</span>,<span class="string">'Error de $\dot q_1$ '</span>);
+leg = legend(splt,<span class="string">'show'</span>);
+set(leg,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+ylabel(<span class="string">'rad/s'</span>);
+xlabel(<span class="string">'time'</span>);
+grid;
+<span class="comment">% Error qd2</span>
+splt = subplot(3,2,4);
+plt = plot(t,qd(:,2)-qdrs(:,2));
+set(plt(1),<span class="string">'DisplayName'</span>,<span class="string">'Error de $\dot q_2$ '</span>);
+leg = legend(splt,<span class="string">'show'</span>);
+set(leg,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+ylabel(<span class="string">'rad/s'</span>);
+xlabel(<span class="string">'time'</span>);
+grid;
+<span class="comment">% Error qd3</span>
+splt = subplot(3,2,6);
+plt = plot(t,qd(:,3)-qdrs(:,3));
+set(plt(1),<span class="string">'DisplayName'</span>,<span class="string">'Error de $\dot q_3$ '</span>);
+leg = legend(splt,<span class="string">'show'</span>);
+set(leg,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+ylabel(<span class="string">'rad/s'</span>);
+xlabel(<span class="string">'time'</span>);
+grid;
+
+figure1 = figure(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1]);
+
+<span class="comment">% Corriente Im1</span>
+splt = subplot(3,2,1);
+plt = plot(t,Im(:,1));
+set(plt(1),<span class="string">'DisplayName'</span>,<span class="string">'Corriente $Im_1$'</span>);
+leg = legend(splt,<span class="string">'show'</span>);
+set(leg,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+ylabel(<span class="string">'Amperaje'</span>);
+xlabel(<span class="string">'time'</span>);
+grid;
+<span class="comment">% Corriente Im2</span>
+splt = subplot(3,2,3);
+plt = plot(t,Im(:,2));
+set(plt(1),<span class="string">'DisplayName'</span>,<span class="string">'Corriente $Im_2$'</span>);
+leg = legend(splt,<span class="string">'show'</span>);
+set(leg,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+ylabel(<span class="string">'Amperaje'</span>);
+xlabel(<span class="string">'time'</span>);
+grid;
+
+<span class="comment">% Corriente Im3</span>
+splt = subplot(3,2,5);
+plt = plot(t,Im(:,3));
+set(plt(1),<span class="string">'DisplayName'</span>,<span class="string">'Corriente $Im_3$'</span>);
+leg = legend(splt,<span class="string">'show'</span>);
+set(leg,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+ylabel(<span class="string">'Amperaje'</span>);
+xlabel(<span class="string">'time'</span>);
+grid;
+
+<span class="comment">% Trayectoria de referencia vs medida</span>
+axes1 = axes(<span class="string">'Parent'</span>,figure1,<span class="keyword">...</span>
+    <span class="string">'Position'</span>,[0.570340909090909 0.409632352941176 0.334659090909091 0.515367647058823]);
+<span class="comment">% Create line</span>
+line(xyz(2:end,1),xyz(2:end,2),xyz(2:end,3),<span class="string">'Parent'</span>,axes1,<span class="string">'DisplayName'</span>,<span class="string">'Trayectoria medida'</span>,<span class="string">'Color'</span>,[1 0 0]);
+line(xyzr(2:end,1),xyzr(2:end,2),xyzr(2:end,3),<span class="string">'Parent'</span>,axes1,<span class="string">'DisplayName'</span>,<span class="string">'Trayectoria referencia'</span>);
+<span class="comment">% Create zlabel</span>
+zlabel(<span class="string">'z'</span>);
+ylabel(<span class="string">'y'</span>);
+xlabel(<span class="string">'x'</span>);
+view(axes1,[-28.4 24.4]);
+grid(axes1,<span class="string">'on'</span>);
+legend1 = legend(axes1,<span class="string">'show'</span>);
+set(legend1,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>,<span class="string">'Location'</span>,<span class="string">'northeast'</span>);
+hold(splt,<span class="string">'off'</span>);
+
+<span class="comment">% Error distancia</span>
+splt = subplot(3,2,6);
+plt  = plot(t(2:end),vecnorm((xyz(2:end,:)-xyzr(2:end,:))')',<span class="string">'b'</span>);
+set(plt(1),<span class="string">'DisplayName'</span>,<span class="string">'Error distancia'</span>);
+leg = legend(splt,<span class="string">'show'</span>);
+set(leg,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+ylabel(<span class="string">'Metros'</span>);
+xlabel(<span class="string">'time'</span>);
+grid;
+</pre><img vspace="5" hspace="5" src="A_SimulacionAnalisis_01.png" alt=""> <img vspace="5" hspace="5" src="A_SimulacionAnalisis_02.png" alt=""> <img vspace="5" hspace="5" src="A_SimulacionAnalisis_03.png" alt=""> <h2 id="3">Guardar controlador</h2><pre class="codeinput">answer = questdlg(<span class="string">'&iquest;Guardar Controlador?'</span>,<span class="string">'Prompt'</span>,<span class="string">'Si'</span>,<span class="string">'No'</span>,<span class="string">'Si'</span>);
+
+<span class="keyword">switch</span> answer
+    <span class="keyword">case</span> <span class="string">'Si'</span>
+        uisave({<span class="string">'Crl1'</span>,<span class="string">'Crl2'</span>,<span class="string">'Crl3'</span>,<span class="string">'Gs1'</span>,<span class="string">'Gs2'</span>,<span class="string">'Gs3'</span>,<span class="string">'M_num'</span>,<span class="string">'V_num'</span>,<span class="string">'G_num'</span>,<span class="string">'tipoControl'</span>});
+    <span class="keyword">case</span> <span class="string">'No'</span>
+<span class="keyword">end</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+
+%% Simulacion
+
+fprintf('Simulando...\n');
+% Tiempo de muestreo del generador de trayecotrias
+Ts_reference = 0.015;
+% Tiempo de muestreo del control 
+Ts_control = 0.001;
+% Tiempo de simulacion
+fin=5;
+% Tiempo de muestreo para analisis 
+ts = 0.001;
+
+sim('SimulacionControl.slx');
+
+fprintf('Fin simulacion.\n\n');
+
+%% Graficamos resutlados
+
+figure('units','normalized','outerposition',[0 0 1 1])
+% Plot q1 vs qr1 vs qr1s
+splt = subplot(3,2,1);
+plt  = plot(t,q(:,1),'r',t,qr(:,1),'b',t,qrs(:,1),'k');
+set(plt(1),'DisplayName','$q_1$','Color',[1 0 0]);
+set(plt(2),'DisplayName','$q_1$ referencia');
+set(plt(3),'DisplayName','$q_1$ ref. muestreado');
+leg = legend(splt,'show');
+set(leg,'Interpreter','latex');
+ylabel('rad');
+xlabel('time');
+grid;
+% Plot q2 vs qr2
+splt = subplot(3,2,3);
+plt  = plot(t,q(:,2),'r',t,qr(:,2),'b',t,qrs(:,2),'k');
+set(plt(1),'DisplayName','$q_2$','Color',[1 0 0]);
+set(plt(2),'DisplayName','$q_2$ referencia');
+set(plt(3),'DisplayName','$q_2$ ref. muestreado');
+leg = legend(splt,'show');
+set(leg,'Interpreter','latex');
+ylabel('rad');
+xlabel('time');
+grid;
+% Plot q3 vs qr3
+splt = subplot(3,2,5);
+plt  = plot(t,q(:,3),'r',t,qr(:,3),'b',t,qrs(:,3),'k');
+set(plt(1),'DisplayName','$q_3$','Color',[1 0 0]);
+set(plt(2),'DisplayName','$q_3$ referencia');
+set(plt(3),'DisplayName','$q_3$ ref. muestreado');
+leg = legend(splt,'show');
+set(leg,'Interpreter','latex');
+ylabel('rad');
+xlabel('time');
+grid;
+
+% Error q1
+splt = subplot(3,2,2);
+plt = plot(t,q(:,1)-qrs(:,1));
+set(plt(1),'DisplayName','Error de $q_1$');
+leg = legend(splt,'show');
+set(leg,'Interpreter','latex');
+ylabel('rad');
+xlabel('time');
+grid;
+% Error q2
+splt = subplot(3,2,4);
+plt = plot(t,q(:,2)-qrs(:,2));
+set(plt(1),'DisplayName','Error de $q_2$');
+leg = legend(splt,'show');
+set(leg,'Interpreter','latex');
+ylabel('rad');
+xlabel('time');
+grid;
+% Error q3
+splt = subplot(3,2,6);
+plt = plot(t,q(:,3)-qrs(:,3));
+set(plt(1),'DisplayName','Error de $q_3$');
+leg = legend(splt,'show');
+set(leg,'Interpreter','latex');
+ylabel('rad');
+xlabel('time');
+grid;
+
+figure('units','normalized','outerposition',[0 0 1 1])
+% Plot qd1 vs qdr1
+splt = subplot(3,2,1);
+plt  = plot(t,qd(:,1),'r',t,qdr(:,1),'b',t,qdrs(:,1),'k');
+set(plt(1),'DisplayName','$\dot q_1$','Color',[1 0 0]);
+set(plt(2),'DisplayName','$\dot q_1$ referencia');
+set(plt(3),'DisplayName','$\dot q_1$ ref. muestreado');
+leg = legend(splt,'show');
+set(leg,'Interpreter','latex');
+ylabel('rad/s');
+xlabel('time');
+grid;
+% Plot qd2 vs qdr2
+splt = subplot(3,2,3);
+plt  = plot(t,qd(:,2),'r',t,qdr(:,2),'b',t,qdrs(:,2),'k');
+set(plt(1),'DisplayName','$\dot q_2$','Color',[1 0 0]);
+set(plt(2),'DisplayName','$\dot q_2$ referencia');
+set(plt(3),'DisplayName','$\dot q_2$ ref. muestreado');
+leg = legend(splt,'show');
+set(leg,'Interpreter','latex');
+ylabel('rad/s');
+xlabel('time');
+grid;
+% Plot qd3 vs qdr3
+splt = subplot(3,2,5);
+plt  = plot(t,qd(:,3),'r',t,qdr(:,3),'b',t,qdrs(:,3),'k');
+set(plt(1),'DisplayName','$\dot q_3$ ');
+set(plt(2),'DisplayName','$\dot q_3$ referencia');
+set(plt(3),'DisplayName','$\dot q_3$ ref. muestreado');
+leg = legend(splt,'show');
+set(leg,'Interpreter','latex');
+ylabel('rad/s');
+xlabel('time');
+grid;
+
+% Error qd1
+splt = subplot(3,2,2);
+plt = plot(t,qd(:,1)-qdrs(:,1));
+set(plt(1),'DisplayName','Error de $\dot q_1$ ');
+leg = legend(splt,'show');
+set(leg,'Interpreter','latex');
+ylabel('rad/s');
+xlabel('time');
+grid;
+% Error qd2
+splt = subplot(3,2,4);
+plt = plot(t,qd(:,2)-qdrs(:,2));
+set(plt(1),'DisplayName','Error de $\dot q_2$ ');
+leg = legend(splt,'show');
+set(leg,'Interpreter','latex');
+ylabel('rad/s');
+xlabel('time');
+grid;
+% Error qd3
+splt = subplot(3,2,6);
+plt = plot(t,qd(:,3)-qdrs(:,3));
+set(plt(1),'DisplayName','Error de $\dot q_3$ ');
+leg = legend(splt,'show');
+set(leg,'Interpreter','latex');
+ylabel('rad/s');
+xlabel('time');
+grid;
+
+figure1 = figure('units','normalized','outerposition',[0 0 1 1]);
+
+% Corriente Im1
+splt = subplot(3,2,1);
+plt = plot(t,Im(:,1));
+set(plt(1),'DisplayName','Corriente $Im_1$');
+leg = legend(splt,'show');
+set(leg,'Interpreter','latex');
+ylabel('Amperaje');
+xlabel('time');
+grid;
+% Corriente Im2
+splt = subplot(3,2,3);
+plt = plot(t,Im(:,2));
+set(plt(1),'DisplayName','Corriente $Im_2$');
+leg = legend(splt,'show');
+set(leg,'Interpreter','latex');
+ylabel('Amperaje');
+xlabel('time');
+grid;
+
+% Corriente Im3
+splt = subplot(3,2,5);
+plt = plot(t,Im(:,3));
+set(plt(1),'DisplayName','Corriente $Im_3$');
+leg = legend(splt,'show');
+set(leg,'Interpreter','latex');
+ylabel('Amperaje');
+xlabel('time');
+grid;
+
+% Trayectoria de referencia vs medida
+axes1 = axes('Parent',figure1,...
+    'Position',[0.570340909090909 0.409632352941176 0.334659090909091 0.515367647058823]);
+% Create line
+line(xyz(2:end,1),xyz(2:end,2),xyz(2:end,3),'Parent',axes1,'DisplayName','Trayectoria medida','Color',[1 0 0]);
+line(xyzr(2:end,1),xyzr(2:end,2),xyzr(2:end,3),'Parent',axes1,'DisplayName','Trayectoria referencia');
+% Create zlabel
+zlabel('z');
+ylabel('y');
+xlabel('x');
+view(axes1,[-28.4 24.4]);
+grid(axes1,'on');
+legend1 = legend(axes1,'show');
+set(legend1,'Interpreter','latex','Location','northeast');
+hold(splt,'off');
+
+% Error distancia
+splt = subplot(3,2,6);
+plt  = plot(t(2:end),vecnorm((xyz(2:end,:)-xyzr(2:end,:))')','b');
+set(plt(1),'DisplayName','Error distancia');
+leg = legend(splt,'show');
+set(leg,'Interpreter','latex');
+ylabel('Metros');
+xlabel('time');
+grid;
+
+%% Guardar controlador
+
+answer = questdlg('¿Guardar Controlador?','Prompt','Si','No','Si');
+
+switch answer
+    case 'Si'
+        uisave({'Crl1','Crl2','Crl3','Gs1','Gs2','Gs3','M_num','V_num','G_num','tipoControl'});
+    case 'No'
+end
+
+##### SOURCE END #####
+--></body></html>
